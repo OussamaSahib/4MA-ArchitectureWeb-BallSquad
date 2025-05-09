@@ -11,11 +11,21 @@ export default function Nav() {
     <nav class="fixed top-0 left-0 h-screen w-48 bg-[#c5ff36] p-6">
     <ul class="flex flex-col items-center gap-6 text-black text-2xl font-bold w-full">
       <li class={active("/")}>
-        <a href="/" class="w-full text-center px-3 py-2 block">MATCHS</a>
+        <a href="/" class="w-full text-center px-3 py-2 block"> MY MATCHS</a>
       </li>
-      <li class={active("/oldmatchs")}>
-        <a href="/oldmatchs" class="w-full text-center px-3 py-2 block">ARGENT</a>
+
+      <li class={active("/newmatch")}>
+        <a href="/newmatch" class="w-full text-center px-3 py-2 block"> NEW MATCH</a>
       </li>
+
+      <li class={active("/money")}>
+        <a href="/money" class="w-full text-center px-3 py-2 block">MONEY</a>
+      </li>
+
+      <li class={active("/friends")}>
+        <a href="/friends" class="w-full text-center px-3 py-2 block">FRIENDS</a>
+      </li>
+
       <li class={active("/profile")}>
         <a href="/profile" class="w-full text-center px-3 py-2 block">PROFILE</a>
       </li>

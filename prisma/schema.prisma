@@ -3,10 +3,20 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
+}
+
+
+model Match {
+  id               Int      @id @default(autoincrement())
+  sport            String
+  date             DateTime  @default(now())
+  place            String
+  field            String
+  total_price      Float
+  quantity_players Int
 }
