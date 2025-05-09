@@ -15,12 +15,13 @@ function getSportIcon(sport: string) {
 }
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString("fr-FR", {
+  const str = date.toLocaleDateString("fr-FR", {
     weekday: "long",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function formatHour(date: Date) {
@@ -31,42 +32,28 @@ function formatHour(date: Date) {
 }
 
 
-export default function MatchCard(props: { match: Match }): JSX.Element {
+export default function MatchCard(props: { match: Match }) {
   const { match } = props;
 
   return (
-    <div class="bg-[#c5ff36] text-black p-2 rounded-2xl max-w-3xl mx-auto shadow-lg">
-      <div class="flex gap-6 items-start">
-        {/* Icône */}
-        <div>
-          <img
-            src={getSportIcon(match.sport)}
-            alt={match.sport}
-            class="w-12 h-12 object-contain"
-          />
-        </div>
-
-        <div class="flex-1">
-          {/* Sport */}
-          <h2 class="text-2xl font-bold uppercase">{match.sport}</h2>
-
-          {/* Date + heure + lieu */}
-          <div class="flex justify-between items-start mt-4 flex-wrap gap-y-2">
-            {/* Date & heure */}
-            <div>
-              <p class="font-bold text-lg"> {formatDate(match.date)}</p>
-              <p class="text-xl mt-1">{formatHour(match.date)}</p>
-            </div>
-
-            {/* Lieu */}
-            <div class="text-right text-sm leading-tight">
-              <p class="underline">Lieu</p>
-              <p class="font-medium">{match.place}</p>
-              <p>- {match.field}</p>
-            </div>
-          </div>
-        </div>
+    <div class="bg-[#c5ff36] text-black p-4 rounded-2xl max-w-3xl mx-auto shadow-lg">
+      {/* Icône + sport */}
+      <div class="flex items-center gap-4 mb-2">
+        <img src={getSportIcon(match.sport)} alt="" class="w-10 h-10" />
+        <h2 class="text-3xl font-bold uppercase">{match.sport}</h2>
       </div>
+
+     {/* Date + Lieu côte à côte */}
+      <div class="flex justify-between items-center text-2xl font-semibold mt-6 mb-2 mr-6 flex-wrap gap-y-2">
+        <span>🗓️ {formatDate(match.date)}</span>
+        <span>📍 {match.place} – {match.field}</span>
+      </div>
+
+      {/* Heure en dessous */}
+      <div class="mt-3 text-2xl font-semibold flex items-center gap-2">
+        🕒 {formatHour(match.date)}
+      </div>
+
     </div>
   );
 }
