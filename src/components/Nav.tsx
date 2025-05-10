@@ -2,11 +2,17 @@ import { useLocation } from "@solidjs/router";
 
 export default function Nav() {
   const location = useLocation();
-  const active = (path: string) =>
-    path === location.pathname
-  ? "bg-black text-white px-3 py-1 rounded"
-  : "hover:underline";
-
+  const active = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/" || location.pathname.startsWith("/match/")
+        ? "bg-black text-white px-3 py-1 rounded"
+        : "hover:underline";
+    }
+    return location.pathname === path
+      ? "bg-black text-white px-3 py-1 rounded"
+      : "hover:underline";
+  };
+  
   return (
     <nav class="fixed top-0 left-0 h-screen w-48 bg-[#c5ff36] p-6">
     <ul class="flex flex-col items-center gap-6 text-black text-2xl font-bold w-full">

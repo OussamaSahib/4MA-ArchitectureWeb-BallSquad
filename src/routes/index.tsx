@@ -39,7 +39,7 @@ export default function Home() {
       </div>
 
       {/* Contenu */}
-      <div class="space-y-4">
+      <div>
         <Show when={activeTab() === "prochains"}>
           <For each={matchs()
             .filter(m => new Date(m.end_time).getTime() + 60 * 60 * 1000 > Date.now())

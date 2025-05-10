@@ -9,6 +9,15 @@ export const getMatchs= query(async ()=> {
   return await db.match.findMany()
 }, "getMatchs")
 
+export const getMatchById = query(async (id: string) => {
+  "use server";
+  const matchId = parseInt(id, 10);
+  return await db.match.findUnique({
+    where: { id: matchId }
+  });
+}, "getMatchById");
+
+
 
 
 
@@ -38,8 +47,6 @@ export const addMatch= async (form: FormData) => {
     total_price: form.get("total_price"),
     quantity_players: form.get("quantity_players"),
   });
-
-  
 
   const matchToInsert = {
     sport: match.sport,
