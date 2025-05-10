@@ -41,13 +41,19 @@ export default function Home() {
       {/* Contenu */}
       <div class="space-y-4">
         <Show when={activeTab() === "prochains"}>
-          <For each={matchs()}>
+          <For each={matchs().filter(m =>
+            new Date(m.end_time).getTime() +60*60*1000 >Date.now()
+          )}>
             {(match) => <MatchCard match={match} />}
           </For>
         </Show>
 
-        <Show when={activeTab() === "anciens"}>
-          <p class="text-white">Contenu des anciens matchs à venir…</p>
+        <Show when={activeTab()==="anciens"}>
+          <For each={matchs().filter(m =>
+            new Date(m.end_time).getTime() +60*60*1000 <=Date.now()
+          )}>
+            {(match) => <MatchCard match={match} />}
+          </For>
         </Show>
       </div>
     </main>
