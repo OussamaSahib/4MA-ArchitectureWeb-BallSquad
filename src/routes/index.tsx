@@ -1,40 +1,55 @@
-import {A} from "@solidjs/router";
-import {createAsyncStore, type RouteDefinition,} from "@solidjs/router";
-import {For} from "solid-js";
-import {getMatchs} from "~/lib/matchs";
+import {createAsyncStore} from "@solidjs/router";
+import { createSignal, For, Show } from "solid-js";
+import { getMatchs } from "~/lib/matchs";
 import MatchCard from "~/components/MatchCard";
-
-export const route = {
-  preload() {
-    getMatchs();
-  },
-} satisfies RouteDefinition;
 
 
 
 export default function Home() {
-   const matchs= createAsyncStore(()=> getMatchs(), {
-    initialValue: [],
-  }
-);
+  const matchs = createAsyncStore(() => getMatchs(), { initialValue: [] });
+  const [activeTab, setActiveTab] = createSignal<"prochains" | "anciens">("prochains");
 
-
+  
   return (
-    <main class="ml-48 text-center mx-auto text-gray-700 p-4">
+    <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
       <h1 class="text-6xl text-white font-bold uppercase mt-0 mb-8">MATCHS</h1>
 
-      <div class="flex justify-center gap-35 text-3xl text-white font-semibold">
-        <span class="border-b-4 pb-1" style="border-color: #c5ff36">Prochains</span>
-        <A href="/oldmatchs" class="hover:opacity-80">Anciens</A>
+      {/* Onglets */}
+      <div class="flex justify-center gap-35 text-3xl text-white font-semibold mb-8">
+        <button
+          onClick={() => setActiveTab("prochains")}
+          class={`pb-1 border-b-4 transition cursor-pointer ${
+            activeTab() === "prochains"
+              ? "border-[#c5ff36]"
+              : "border-transparent hover:border-gray-400"
+          }`}
+        >
+          Prochains
+        </button>
+        <button
+          onClick={() => setActiveTab("anciens")}
+          class={`pb-1 border-b-4 transition cursor-pointer ${
+            activeTab() === "anciens"
+              ? "border-[#c5ff36]"
+              : "border-transparent hover:border-gray-400"
+          }`}
+        >
+          Anciens
+        </button>
       </div>
 
-      <div class="mt-8 space-y-4">
-        <For each={matchs()}>
-          {(match) => <MatchCard match={match} />}
-        </For>
-      </div>
-      
+      {/* Contenu */}
+      <div class="space-y-4">
+        <Show when={activeTab() === "prochains"}>
+          <For each={matchs()}>
+            {(match) => <MatchCard match={match} />}
+          </For>
+        </Show>
 
+        <Show when={activeTab() === "anciens"}>
+          <p class="text-white">Contenu des anciens matchs à venir…</p>
+        </Show>
+      </div>
     </main>
   );
 }

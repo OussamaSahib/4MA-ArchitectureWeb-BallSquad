@@ -1,7 +1,7 @@
 import {db} from "./db"
 import {query, action} from "@solidjs/router";
 import {z} from "zod";
-import { redirect } from "@solidjs/router"
+import {redirect} from "@solidjs/router"
 
 
 export const getMatchs= query(async ()=> {
@@ -16,7 +16,8 @@ export const getMatchs= query(async ()=> {
 const matchSchema = z.object({
   sport: z.string(),
   date: z.string(),
-  time: z.string(),
+  start_time: z.string(),
+  end_time: z.string(),
   place: z.string(),
   field: z.string(),
   total_price: z.string(),
@@ -30,24 +31,26 @@ export const addMatch= async (form: FormData) => {
   const match = matchSchema.parse({
     sport: form.get("sport"),
     date: form.get("date"),
-    time: form.get("time"),
+    start_time: form.get("start_time"),
+    end_time: form.get("end_time"),
     place: form.get("place"),
     field: form.get("field"),
     total_price: form.get("total_price"),
     quantity_players: form.get("quantity_players"),
   });
-  // 🛠️ Conversion de date + time en Date (pour Prisma)
-  const fullDate = new Date(`${match.date}T${match.time}`);
 
-  // Conversion des champs string → number
+  
+
   const matchToInsert = {
-      sport: match.sport,
-      date: fullDate,
-      place: match.place,
-      field: match.field,
-      total_price: parseFloat(match.total_price),
-      quantity_players: parseInt(match.quantity_players, 10),
-    };
+    sport: match.sport,
+    date: new Date(match.date),
+    start_time: new Date(`${match.date}T${match.start_time}`),
+    end_time: new Date(`${match.date}T${match.end_time}`),
+    place: match.place,
+    field: match.field,
+    total_price: parseFloat(match.total_price),
+    quantity_players: parseInt(match.quantity_players, 10),
+  };
 
   await db.match.create({ data: matchToInsert });
   return redirect("/");

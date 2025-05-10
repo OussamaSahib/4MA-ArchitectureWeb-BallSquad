@@ -14,7 +14,9 @@ datasource db {
 model Match {
   id               Int      @id @default(autoincrement())
   sport            String
-  date             DateTime  @default(now())
+  date             DateTime @default(now())
+  start_time       DateTime @default(now())
+  end_time         DateTime @default(now())
   place            String
   field            String
   total_price      Float

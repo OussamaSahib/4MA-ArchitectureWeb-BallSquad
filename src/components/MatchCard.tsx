@@ -1,12 +1,14 @@
-import { JSX } from "solid-js";
 type Match = {
   sport: string;
   date: Date;
+  start_time: Date;
+  end_time: Date;
   place: string;
   field: string;
   total_price: number;
   quantity_players: number;
 };
+
 
 function getSportIcon(sport: string) {
   const name = sport.toLowerCase();
@@ -32,6 +34,7 @@ function formatHour(date: Date) {
 }
 
 
+
 export default function MatchCard(props: { match: Match }) {
   const { match } = props;
 
@@ -43,15 +46,16 @@ export default function MatchCard(props: { match: Match }) {
         <h2 class="text-3xl font-bold uppercase">{match.sport}</h2>
       </div>
 
-     {/* Date + Lieu côte à côte */}
+      {/* Date + Lieu */} 
       <div class="flex justify-between items-center text-2xl font-semibold mt-6 mb-2 mr-6 flex-wrap gap-y-2">
         <span>🗓️ {formatDate(match.date)}</span>
-        <span>📍 {match.place} – {match.field}</span>
+        <span>📍 {match.place}</span>
       </div>
 
-      {/* Heure en dessous */}
-      <div class="mt-3 text-2xl font-semibold flex items-center gap-2">
-        🕒 {formatHour(match.date)}
+      {/* Heure + Terrain */}
+      <div class="flex justify-between items-center text-2xl font-semibold mb-2 mr-6 flex-wrap gap-y-2">
+        <span>🕒 {formatHour(match.start_time)} → {formatHour(match.end_time)}</span>
+        <span>🏟️ {match.field}</span>
       </div>
 
     </div>

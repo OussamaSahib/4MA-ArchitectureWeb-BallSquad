@@ -2,7 +2,7 @@ import {addMatchAction} from "~/lib/matchs";
 
 
 
-export default function About() {
+export default function NewMatch() {
    return (
     <main class="ml-148 text-white p-8 max-w-2xl mx-auto">
       <h1 class="text-5xl font-bold uppercase mb-7 text-center">Nouveau Match</h1>
@@ -65,24 +65,35 @@ export default function About() {
 
         {/* Date et Heure */}
         <div>
-          <label class="block font-bold mb-2">Date et Heure :</label>
-          <div class="flex gap-4">
+          <label class="block font-bold mb-2">Date et Heures :</label>
+          <div class="flex gap-2 flex items-center">
             <input
               name="date"
               type="date"
               required
-              class="bg-transparent border text-white p-2 rounded w-36 cursor-pointer"
+              class="bg-transparent border text-white p-2 rounded w-36 mr-8 cursor-pointer"
               onClick={(e) => e.currentTarget.showPicker?.()}
             />
             <input
-              name="time"
+              name="start_time"
               type="time"
               required
               class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer"
+              placeholder="Début"
+              onClick={(e) => e.currentTarget.showPicker?.()}
+            />
+            <span class="text-white text-xl">→</span>
+            <input
+              name="end_time"
+              type="time"
+              required
+              class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer"
+              placeholder="Fin"
               onClick={(e) => e.currentTarget.showPicker?.()}
             />
           </div>
         </div>
+
 
         {/* Lieu + Terrain */}
         <label class="block font-bold mb-2">Lieu et Terrain :</label>
@@ -92,7 +103,7 @@ export default function About() {
             class="bg-transparent border text-white p-2 rounded w-1/2 cursor-pointer"
           >
             <option value="Centre sportif Mounier" class="text-black">Centre sportif Mounier</option>
-            <option value="Autre" class="text-black">Autre</option>
+            <option value="Autre" class="text-black">Fit Five Bockstael</option>
           </select>
           <input
             name="field"
