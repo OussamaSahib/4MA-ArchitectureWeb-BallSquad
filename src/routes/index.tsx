@@ -41,17 +41,19 @@ export default function Home() {
       {/* Contenu */}
       <div class="space-y-4">
         <Show when={activeTab() === "prochains"}>
-          <For each={matchs().filter(m =>
-            new Date(m.end_time).getTime() +60*60*1000 >Date.now()
-          )}>
+          <For each={matchs()
+            .filter(m => new Date(m.end_time).getTime() + 60 * 60 * 1000 > Date.now())
+            .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
+          }>
             {(match) => <MatchCard match={match} />}
           </For>
         </Show>
 
-        <Show when={activeTab()==="anciens"}>
-          <For each={matchs().filter(m =>
-            new Date(m.end_time).getTime() +60*60*1000 <=Date.now()
-          )}>
+        <Show when={activeTab() === "anciens"}>
+          <For each={matchs()
+            .filter(m => new Date(m.end_time).getTime() + 60 * 60 * 1000 <= Date.now())
+            .sort((a, b) => new Date(b.end_time).getTime() - new Date(a.end_time).getTime())
+          }>
             {(match) => <MatchCard match={match} />}
           </For>
         </Show>
