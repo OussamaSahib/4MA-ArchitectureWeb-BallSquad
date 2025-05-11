@@ -29,7 +29,8 @@ const matchSchema = z.object({
   end_time: z.string(),
   place: z.string(),
   field: z.string(),
-  total_price: z.string(),
+  price_euros: z.string(),
+  price_cents: z.string(),
   quantity_players: z.string(),
 });
 
@@ -44,9 +45,12 @@ export const addMatch= async (form: FormData) => {
     end_time: form.get("end_time"),
     place: form.get("place"),
     field: form.get("field"),
-    total_price: form.get("total_price"),
+    price_euros: form.get("price_euros"),
+    price_cents: form.get("price_cents"),
     quantity_players: form.get("quantity_players"),
   });
+
+  const total_price = parseInt(match.price_euros, 10) + parseInt(match.price_cents, 10) / 100;
 
   const matchToInsert = {
     sport: match.sport,
@@ -55,7 +59,7 @@ export const addMatch= async (form: FormData) => {
     end_time: new Date(`${match.date}T${match.end_time}`),
     place: match.place,
     field: match.field,
-    total_price: parseFloat(match.total_price),
+    total_price: total_price,
     quantity_players: parseInt(match.quantity_players, 10),
   };
 

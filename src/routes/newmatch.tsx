@@ -31,7 +31,7 @@ export default function NewMatch() {
           </div>
         </div>
 
-                <div>
+        <div>
           <label class="block font-bold mb-2">Nombre de Joueurs :</label>
 
           <div class="space-y-3">
@@ -110,7 +110,7 @@ export default function NewMatch() {
             type="text"
             required
             placeholder="Terrain"
-            class="bg-transparent border text-white p-2 rounded w-1/2"
+            class="bg-transparent border text-white p-2 rounded w-1/4"
           />
         </div>
 
@@ -120,7 +120,24 @@ export default function NewMatch() {
         {/* Prix Total */}
         <div>
           <label class="block font-bold mb-2">Prix Total :</label>
-          <input name="total_price" type="text" required class="bg-transparent border text-white p-2 rounded w-full" />
+          <div class="flex items-center gap-2">
+            <input
+              name="price_euros"
+              type="number"
+              required
+              placeholder="00"
+              class="bg-transparent border text-white p-2 rounded w-14 text-left"
+            />
+            <span class="text-white text-xl">,</span>
+            <input
+              name="price_cents"
+              type="number"
+              required
+              placeholder="00"
+              class="bg-transparent border text-white p-2 rounded w-14 text-left"
+            />
+            <span class="text-white text-xl">€</span>
+          </div>
         </div>
 
 
