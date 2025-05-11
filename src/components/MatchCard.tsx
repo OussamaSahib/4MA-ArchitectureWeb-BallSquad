@@ -16,7 +16,7 @@ type Match = {
 function getSportIcon(sport: string) {
   const name = sport.toLowerCase();
   const known = ["football", "volleyball", "basketball", "badminton"];
-  return known.includes(name) ? `/images/${name}.png` : "/images/default.png";
+  return known.includes(name) ? `/images/sporticons/${name}.png` : "/images/sporticons/default.png";
 }
 
 function formatDate(date: Date) {
