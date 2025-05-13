@@ -13,7 +13,7 @@ export default function MatchPage(props: { params: { id: any; }; }) {
   return (
 <main class="ml-48 text-white p-8 relative">
   {/* Bouton retour positionné en haut à gauche */}
-  <a href="/" class="absolute top-5 left-16">
+  <a href="/match" class="absolute top-5 left-16">
     <img src="/images/buttons/back_button.png" alt="Retour" class="w-18 h-18" />
   </a>
 
