@@ -4,6 +4,7 @@ import {z} from "zod";
 import {redirect} from "@solidjs/router"
 
 
+//GET MATCHS
 export const getMatchs= query(async ()=> {
   "use server"
   return await db.match.findMany()
@@ -20,8 +21,8 @@ export const getMatchById = query(async (id: string) => {
 
 
 
-
-//SCHEMA de validation
+//POST NEW MATCH
+//Schéma de validation
 const matchSchema = z.object({
   sport: z.string(),
   date: z.string(),
@@ -34,11 +35,12 @@ const matchSchema = z.object({
   quantity_players: z.string(),
 });
 
-//POST: crée un nouveau match
+
+//POST: Crée un nouveau match
 export const addMatch= async (form: FormData) => {
   "use server";
 
-  const match = matchSchema.parse({
+  const match= matchSchema.parse({
     sport: form.get("sport"),
     date: form.get("date"),
     start_time: form.get("start_time"),
@@ -67,5 +69,34 @@ export const addMatch= async (form: FormData) => {
   return redirect("/");
 };
 
-// Export de l'action
+//Export de l'action
 export const addMatchAction= action(addMatch);
+
+
+
+
+//UPDATE EDIT MATCH (-->POST)
+export const editMatch = async (form: FormData) => {
+  "use server";
+  const id = parseInt(form.get("id") as string, 10);
+
+  await db.match.update({
+    where: { id },
+    data: {
+      sport: form.get("sport") as string,
+      place: form.get("place") as string,
+      field: form.get("field") as string,
+      quantity_players: parseInt(form.get("quantity_players") as string, 10),
+      total_price:
+        parseInt(form.get("price_euros") as string, 10) +
+        parseInt(form.get("price_cents") as string, 10) / 100,
+      date: new Date(form.get("date") as string),
+      start_time: new Date(`${form.get("date")}T${form.get("start_time")}`),
+      end_time: new Date(`${form.get("date")}T${form.get("end_time")}`),
+    },
+  });
+
+  return redirect(`/match/${id}`);
+};
+
+export const editMatchAction = action(editMatch);

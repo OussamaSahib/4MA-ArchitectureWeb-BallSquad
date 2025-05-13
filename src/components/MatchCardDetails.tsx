@@ -42,9 +42,9 @@ function formatHour(date: Date) {
 export default function MatchCardDetails(props: {match: Match}){
   const {match}= props;
   const pricePerPlayer= (match.total_price/match.quantity_players).toFixed(2);
+
   const [showModal, setShowModal]= createSignal(false);
   const iban= "BE71 0961 2345 6769";
-
   const copyIBAN= () => {
     navigator.clipboard.writeText(iban);
     alert("IBAN copié !");
