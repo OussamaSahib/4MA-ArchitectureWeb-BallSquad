@@ -10,6 +10,13 @@ export default function MatchPage(props: { params: { id: any; }; }) {
   const match = createAsync(() => getMatchById(props.params.id));
   const [showEdit, setShowEdit] = createSignal(false);
 
+  if (typeof window !== "undefined") {
+    document.addEventListener("submit", () => {
+      setTimeout(() => location.reload(), 100);
+    });
+  }
+
+
   return (
 <main class="ml-48 text-white p-8 relative">
   {/* Bouton retour positionné en haut à gauche */}

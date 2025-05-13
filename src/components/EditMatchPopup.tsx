@@ -16,11 +16,7 @@ export default function EditMatchModal(props: { match: Match; onClose: () => voi
         <button class="absolute top-4 right-5 text-2xl cursor-pointer" onClick={onClose}>✕</button>
         <h2 class="text-4xl font-bold text-center mb-6">Modifier le Match</h2>
 
-        <form
-        action={editMatchAction}
-        method="post"
-        class="space-y-6 text-left"
-        onSubmit={()=> {setTimeout(()=> {location.reload()}, 10);}}>
+        <form action={editMatchAction} method="post" class="space-y-6 text-left">
           <input type="hidden" name="id" value={match.id} />
 
           {/* Sport */}

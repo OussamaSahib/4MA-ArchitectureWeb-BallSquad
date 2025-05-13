@@ -66,7 +66,7 @@ export const addMatch= async (form: FormData) => {
   };
 
   await db.match.create({ data: matchToInsert });
-  return redirect("/");
+  return redirect("/match");
 };
 
 //Export de l'action
