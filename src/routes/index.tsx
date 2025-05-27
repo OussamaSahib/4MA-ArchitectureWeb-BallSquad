@@ -1,8 +1,15 @@
-import { redirect } from "@solidjs/router";
+// src/routes/login.tsx
+import { Login } from "~/lib/user";
 
-export default function Index() {
-   return (
-    <main class="ml-148 text-white p-8 max-w-2xl mx-auto">
-      <h1 class="text-5xl font-bold uppercase mb-7 text-center">Nouveau Match</h1>
-      </main>)
+export default function LoginPage() {
+  return (
+    <main class="p-4">
+      <h1 class="text-xl font-bold mb-4">Login</h1>
+        <form action={Login} method="post">
+          <input name="email" type="email" class="bg-black text-white p-2 rounded" autocomplete="email" required />
+          <input name="password" type="password" class="bg-black text-white p-2 rounded" autocomplete="current-password" required />
+          <button type="submit" class="mt-2 bg-blue-600 text-white p-2 rounded cursor-pointer">Se connecter</button>
+        </form>
+    </main>
+  );
 }

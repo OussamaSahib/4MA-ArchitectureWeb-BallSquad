@@ -4,7 +4,7 @@ export default function Nav() {
   const location = useLocation();
 
   // Ne rien afficher si on est sur la page "/"
-  if (location.pathname === "/") return null;
+if (location.pathname === "/" || location.pathname === "/register") return null;
 
   const active = (path: string) => {
     if (path === "/match") {
