@@ -1,8 +1,12 @@
 import {addMatchAction} from "~/lib/matchs";
+import { AuthGuard} from "~/lib/user";
 
 
 
 export default function NewMatch() {
+    //REDIRECTION SI USER PAS CONNECTE
+    AuthGuard()
+
    return (
     <main class="ml-148 text-white p-8 max-w-2xl mx-auto">
       <h1 class="text-5xl font-bold uppercase mb-7 text-center">Nouveau Match</h1>

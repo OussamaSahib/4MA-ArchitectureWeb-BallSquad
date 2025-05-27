@@ -1,7 +1,8 @@
 import {createAsyncStore} from "@solidjs/router";
-import { createSignal, For, Show } from "solid-js";
-import { getMatchs } from "~/lib/matchs";
+import {createSignal, For, Show} from "solid-js";
+import {getMatchs} from "~/lib/matchs";
 import MatchCard from "~/components/MatchCard";
+import {AuthGuard} from "~/lib/user";
 
 
 
@@ -9,7 +10,10 @@ export default function MatchListPage() {
   const matchs = createAsyncStore(() => getMatchs(), { initialValue: [] });
   const [activeTab, setActiveTab] = createSignal<"prochains" | "anciens">("prochains");
 
-  
+  //REDIRECTION SI USER PAS CONNECTE
+  AuthGuard()
+
+
   return (
     <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
       <h1 class="text-6xl text-white font-bold uppercase mt-0 mb-8">MATCHS</h1>

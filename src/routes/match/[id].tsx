@@ -1,8 +1,9 @@
-import { createAsync } from "@solidjs/router";
-import { getMatchById } from "~/lib/matchs";
-import { createSignal, Show } from "solid-js";
+import {createAsync} from "@solidjs/router";
+import {getMatchById} from "~/lib/matchs";
+import {createSignal, Show} from "solid-js";
 import MatchCardDetails from "~/components/MatchCardDetails";
 import EditMatchPopup from "~/components/EditMatchPopup";
+import {AuthGuard} from "~/lib/user";
 
 
 
@@ -15,6 +16,10 @@ export default function MatchPage(props: { params: { id: any; }; }) {
       setTimeout(() => location.reload(), 100);
     });
   }
+
+
+  //REDIRECTION SI USER PAS CONNECTE
+  AuthGuard()
 
 
   return (

@@ -1,7 +1,10 @@
 // src/routes/register.tsx
-import {Register } from "~/lib/user";
+import {GuestGuard, Register } from "~/lib/user";
 
 export default function RegisterPage() {
+  //REDIRECTION VERS "/MATCH "SI USER CONNECTE
+  GuestGuard();
+
   return (
     <main class="p-4">
       <h1 class="text-xl font-bold mb-4">Register</h1>

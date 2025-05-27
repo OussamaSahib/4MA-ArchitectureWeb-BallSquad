@@ -1,7 +1,10 @@
 // src/routes/login.tsx
-import { Login } from "~/lib/user";
+import { GuestGuard, Login } from "~/lib/user";
 
 export default function LoginPage() {
+  //REDIRECTION VERS "/MATCH "SI USER CONNECTE
+  GuestGuard();
+
   return (
     <main class="p-4">
       <h1 class="text-xl font-bold mb-4">Login</h1>

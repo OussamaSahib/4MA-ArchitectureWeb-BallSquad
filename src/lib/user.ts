@@ -2,7 +2,8 @@ import {db} from "./db";
 import bcrypt from "bcryptjs";
 import {z} from "zod";
 import {getSession} from "./session";
-import {action, query, redirect} from "@solidjs/router";
+import {action, createAsync, query, redirect, useNavigate} from "@solidjs/router";
+import { createEffect } from "solid-js";
 
 
 
@@ -69,23 +70,6 @@ export const Login = action(login);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //Check if the user is connected
 export const getUser = query(async () => {
   "use server"
@@ -102,3 +86,31 @@ export const getUser = query(async () => {
   }
 }, "getUser")
 
+
+//REDIRECTION VERS "/" SI USER PAS CONNECTE
+export function AuthGuard(){
+  const user= createAsync(()=>getUser());
+  const navigate= useNavigate();
+
+  createEffect(() => {
+    if (user()===null){
+      navigate("/");
+    }
+  });
+
+  return user; 
+}
+
+//REDIRECTION VERS "/MATCH "SI USER CONNECTE
+export function GuestGuard(){
+  const user= createAsync(()=>getUser());
+  const navigate= useNavigate();
+
+  createEffect(()=>{
+    if (user()){
+      navigate("/match");
+    }
+  });
+
+  return user;
+}
