@@ -1,4 +1,4 @@
-import {action, query} from "@solidjs/router"
+import {action, query, redirect} from "@solidjs/router"
 import {useSession} from "vinxi/http"
 import {db} from "./db"
 
@@ -16,14 +16,11 @@ export function getSession(){
 }
 
 
-
-
-
-
-
-// export const logout= action(async()=>{
-//   "use server"
-//   const session= await getSession()
-//   await session.clear()
-// })
+export const logout = action(async () => {
+  "use server"
+  const session = await getSession();
+  await session.clear();
+  console.log("Session avant clear:", session.data);
+  return redirect("/"); // redirection immédiate
+});
 
