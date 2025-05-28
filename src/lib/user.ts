@@ -7,17 +7,28 @@ import { createEffect } from "solid-js";
 
 
 
-//POST REGISTER
-export const userSchema = z.object({
+
+export const RegisterUserSchema= z.object({
+  email: z.string(),
+  password: z.string(),
+  firstname: z.string(),
+  lastname: z.string(),
+});
+
+export const LoginUserSchema= z.object({
   email: z.string(),
   password: z.string(),
 });
 
+
+//POST REGISTER
 const register = async (form: FormData) => {
   "use server";
-  const user = userSchema.parse({
+  const user = RegisterUserSchema.parse({
     email: form.get("email"),
     password: form.get("password"),
+    firstname: form.get("firstname"),
+    lastname: form.get("lastname"),
   });
 
   const hashed = await bcrypt.hash(user.password, 10);
@@ -25,7 +36,9 @@ const register = async (form: FormData) => {
   await db.user.create({
     data: {
       email: user.email, 
-      password: hashed },
+      password: hashed,
+      firstname: user.firstname,
+      lastname: user.lastname,},
   });
   return redirect("/");
 };
@@ -36,9 +49,9 @@ export const Register = action(register); // ← ici la magie
 
 
 //GET+SESSION LOGIN
-const login = async (form: FormData) => {
+const login = async (form: FormData)=>{
   "use server";
-  const user = userSchema.parse({
+  const user = LoginUserSchema.parse({
     email: form.get("email"),
     password: form.get("password"),
   });
@@ -80,6 +93,11 @@ export const getUser = query(async () => {
     }
     return await db.user.findUniqueOrThrow({
       where: { email: session.data.email },
+      select: {
+        email: true,
+        firstname: true,
+        lastname: true,
+      },
     })
   } catch {
     return null
