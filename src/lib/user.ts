@@ -143,3 +143,38 @@ export async function getUserFromSession() {
     where: { email: session.data.email },
   });
 }
+
+
+
+//UPDATE USER
+export const UpdateUserSchema = z.object({
+  firstname: z.string(),
+  lastname: z.string(),
+  email: z.string().email(),
+});
+
+export const updateUser = action(async (form: FormData) => {
+  "use server";
+
+  const user = await getUser(); // ✅ récupère l'utilisateur via session
+  if (!user) throw new Error("Utilisateur non connecté");
+
+  const data = UpdateUserSchema.parse({
+    firstname: form.get("firstname"),
+    lastname: form.get("lastname"),
+    email: form.get("email"),
+  });
+
+  await db.user.update({
+    where: { email: user.email }, // utilise l'ID plutôt que l'email (plus fiable)
+    data,
+  });
+
+  // Met à jour la session si l’email a changé
+  if (data.email !== user.email) {
+    const session = await import("./session").then((m) => m.getSession());
+    await session.update({ email: data.email });
+  }
+
+  return redirect("/profile");
+});
