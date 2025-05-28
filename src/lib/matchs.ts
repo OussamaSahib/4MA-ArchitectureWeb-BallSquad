@@ -2,19 +2,36 @@ import {db} from "./db"
 import {query, action} from "@solidjs/router";
 import {z} from "zod";
 import {redirect} from "@solidjs/router"
+import {getUserFromSession} from "./user";
 
 
-//GET MATCHS
-export const getMatchs= query(async ()=> {
-  "use server"
-  return await db.match.findMany()
-}, "getMatchs")
-
-export const getMatchById = query(async (id: string) => {
+//GET MATCHS(créés ou rejoints par l'utilisateur connecté)
+export const getMatchs= query(async ()=>{
   "use server";
-  const matchId = parseInt(id, 10);
+  const user= await getUserFromSession();
+  if (!user) return [];
+
+  return await db.match.findMany({
+    where: {
+      OR: [
+        {id_creator: user.id},
+        {players: {some: {id: user.id}}},
+      ],
+    },
+    include:{
+      players: true,
+      creator: true,
+    },
+  });
+}, "getMatchs");
+
+//GET DETAILS MATCH
+export const getMatchById= query(async (id: string)=>{
+  "use server";
+  const matchId= parseInt(id, 10);
   return await db.match.findUnique({
-    where: { id: matchId }
+    where: {id: matchId},
+    include: {players: true, creator: true},
   });
 }, "getMatchById");
 
@@ -23,7 +40,7 @@ export const getMatchById = query(async (id: string) => {
 
 //POST NEW MATCH
 //Schéma de validation
-const matchSchema = z.object({
+const matchSchema= z.object({
   sport: z.string(),
   date: z.string(),
   start_time: z.string(),
@@ -37,8 +54,11 @@ const matchSchema = z.object({
 
 
 //POST: Crée un nouveau match
-export const addMatch= async (form: FormData) => {
+export const addMatch= async (form: FormData)=>{
   "use server";
+
+  const user= await getUserFromSession();
+  if (!user) throw new Error("User not connected");
 
   const match= matchSchema.parse({
     sport: form.get("sport"),
@@ -52,20 +72,24 @@ export const addMatch= async (form: FormData) => {
     quantity_players: form.get("quantity_players"),
   });
 
-  const total_price = parseInt(match.price_euros, 10) + parseInt(match.price_cents, 10) / 100;
+  const total_price= parseInt(match.price_euros, 10) +parseInt(match.price_cents, 10)/100;
 
-  const matchToInsert = {
-    sport: match.sport,
-    date: new Date(match.date),
-    start_time: new Date(`${match.date}T${match.start_time}`),
-    end_time: new Date(`${match.date}T${match.end_time}`),
-    place: match.place,
-    field: match.field,
-    total_price: total_price,
-    quantity_players: parseInt(match.quantity_players, 10),
-  };
-
-  await db.match.create({ data: matchToInsert });
+  await db.match.create({
+      data:{
+        sport: match.sport,
+        date: new Date(match.date),
+        start_time: new Date(`${match.date}T${match.start_time}`),
+        end_time: new Date(`${match.date}T${match.end_time}`),
+        place: match.place,
+        field: match.field,
+        total_price,
+        quantity_players: parseInt(match.quantity_players, 10),
+        id_creator: user.id,
+        players:{
+          connect: {id: user.id}, //Créateur est aussi joueur
+        },
+      },
+    });
   return redirect("/match");
 };
 
@@ -81,7 +105,7 @@ export const editMatch = async (form: FormData) => {
   const id = parseInt(form.get("id") as string, 10);
 
   await db.match.update({
-    where: { id },
+    where: {id},
     data: {
       sport: form.get("sport") as string,
       place: form.get("place") as string,

@@ -114,3 +114,14 @@ export function GuestGuard(){
 
   return user;
 }
+
+//RECUPERER DONNES USER
+export async function getUserFromSession() {
+  "use server";
+  const session = await getSession();
+  if (!session.data.email) return null;
+
+  return await db.user.findUnique({
+    where: { email: session.data.email },
+  });
+}
