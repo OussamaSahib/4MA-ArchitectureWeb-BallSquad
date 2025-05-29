@@ -4,6 +4,8 @@ import {z} from "zod";
 import {getSession} from "./session";
 import {action, createAsync, query, redirect, useNavigate} from "@solidjs/router";
 import { createEffect } from "solid-js";
+import fs from "fs";
+import path from "path";
 
 
 
@@ -97,6 +99,7 @@ export const getUser = query(async () => {
         email: true,
         firstname: true,
         lastname: true,
+        photo: true,
       },
     })
   } catch {
@@ -156,7 +159,7 @@ export const UpdateUserSchema = z.object({
 export const updateUser = action(async (form: FormData) => {
   "use server";
 
-  const user = await getUser(); // ✅ récupère l'utilisateur via session
+  const user = await getUserFromSession();
   if (!user) throw new Error("Utilisateur non connecté");
 
   const data = UpdateUserSchema.parse({
@@ -165,14 +168,47 @@ export const updateUser = action(async (form: FormData) => {
     email: form.get("email"),
   });
 
+  const file = form.get("photo") as File;
+  const removePhoto = form.get("removePhoto") === "true";
+
+  let photoPath = user.photo;
+
+  const uploadDir = path.resolve("public/images/profile_photos");
+
+  // Supprimer ancienne photo si demande ou nouvelle image
+  if ((removePhoto || (file && file.size > 0)) && user.photo && user.photo !== "/images/profile_photos/icone_profile.png") {
+    const oldPhotoPath = path.resolve("public" + user.photo);
+    if (fs.existsSync(oldPhotoPath)) {
+      fs.unlinkSync(oldPhotoPath);
+    }
+    photoPath = null; // Réinitialise vers défaut si suppression
+  }
+
+  // Gérer nouvelle image si fournie
+  if (file && file.size > 0) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const ext = path.extname(file.name);
+    const filename = `${data.firstname}_${data.lastname}_${Date.now()}${ext}`;
+    const filepath = path.join(uploadDir, filename);
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    fs.writeFileSync(filepath, buffer);
+    photoPath = `/images/profile_photos/${filename}`;
+  }
+
   await db.user.update({
-    where: { email: user.email }, // utilise l'ID plutôt que l'email (plus fiable)
-    data,
+    where: { id: user.id },
+    data: {
+      ...data,
+      photo: photoPath,
+    },
   });
 
-  // Met à jour la session si l’email a changé
   if (data.email !== user.email) {
-    const session = await import("./session").then((m) => m.getSession());
+    const session = await getSession();
     await session.update({ email: data.email });
   }
 

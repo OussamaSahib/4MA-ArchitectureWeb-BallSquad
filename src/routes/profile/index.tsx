@@ -25,9 +25,9 @@ export default function Profile() {
               {/* Avatar */}
               <div class="flex justify-center">
                 <img
-                  src="/images/icone_profile.png"
+                  src={u().photo || "/images/profile_photos/icone_profile.png"}
                   alt="Avatar"
-                  class="rounded-full w-40 h-40 object-cover cursor-pointer"
+                  class="rounded-full w-45 h-45 object-cover shadow cursor-pointer"
                   onClick={() => setShowImage(true)}
                 />
               </div>
@@ -76,9 +76,9 @@ export default function Profile() {
           {/* Image centrée */}
           <div class="flex flex-1 items-start justify-center">
             <img
-              src="/images/icone_profile.png"
+              src={user()?.photo || "/images/icone_profile.png"}
               alt="Avatar Zoom"
-              class="max-w-md rounded-xl cursor-pointer"
+              class="max-w-md rounded-xl shadow-lg cursor-pointer"
             />
           </div>
 

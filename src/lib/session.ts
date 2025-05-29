@@ -1,4 +1,4 @@
-import {action, query, redirect} from "@solidjs/router"
+import {action, redirect} from "@solidjs/router"
 import {useSession} from "vinxi/http"
 import {db} from "./db"
 
