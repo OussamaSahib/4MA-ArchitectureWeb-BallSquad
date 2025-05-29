@@ -96,6 +96,7 @@ export const getUser = query(async () => {
     return await db.user.findUniqueOrThrow({
       where: { email: session.data.email },
       select: {
+        id: true,
         email: true,
         firstname: true,
         lastname: true,

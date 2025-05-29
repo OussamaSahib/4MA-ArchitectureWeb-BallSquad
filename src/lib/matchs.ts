@@ -18,6 +18,7 @@ export const getMatchs= query(async ()=>{
         {players: {some: {id: user.id}}},
       ],
     },
+    distinct: ['id'],
     include:{
       players: true,
       creator: true,

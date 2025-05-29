@@ -1,4 +1,5 @@
 import { A } from "@solidjs/router";
+import { Show } from "solid-js";
 
 type Match = {
   id: any;
@@ -10,6 +11,7 @@ type Match = {
   field: string;
   total_price: number;
   quantity_players: number;
+  id_creator: number;
 };
 
 
@@ -38,19 +40,29 @@ function formatHour(date: Date) {
 
 
 
-export default function MatchCard(props: { match: Match }) {
-  const { match } = props;
+export default function MatchCard(props: { match: Match, user?: any }) {
+  const { match, user } = props;
+  const isCreator = user?.id === match.id_creator;
 
   return (
     <A href={`/match/${match.id}`}>
-      <div class="bg-[#c5ff36] text-black p-4 rounded-2xl max-w-3xl mx-auto shadow-lg mb-4">
+      <div class="relative bg-[#c5ff36] text-black p-4 rounded-2xl max-w-3xl mx-auto shadow-lg mb-4">
+        {/* Icône creator */}
+        <Show when={isCreator}>
+          <img
+            src="/images/creator_icon.png"
+            alt="Créateur"
+            class="absolute top-3 right-3 w-10 h-10"
+          />
+        </Show>
+
         {/* Icône + sport */}
         <div class="flex items-center gap-4 mb-2">
           <img src={getSportIcon(match.sport)} alt="" class="w-10 h-10" />
           <h2 class="text-3xl font-bold uppercase">{match.sport}</h2>
         </div>
 
-        {/* Date + Lieu */} 
+        {/* Date + Lieu */}
         <div class="flex justify-between items-center text-2xl font-semibold mt-6 mb-2 mr-6 flex-wrap gap-y-2">
           <span>🗓️ {formatDate(match.date)}</span>
           <span>📍 {match.place}</span>
@@ -61,7 +73,6 @@ export default function MatchCard(props: { match: Match }) {
           <span>🕒 {formatHour(match.start_time)} → {formatHour(match.end_time)}</span>
           <span>🏟️ {match.field}</span>
         </div>
-
       </div>
     </A>
   );

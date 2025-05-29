@@ -1,18 +1,20 @@
-import {createAsyncStore} from "@solidjs/router";
+import {createAsync, createAsyncStore} from "@solidjs/router";
 import {createSignal, For, Show} from "solid-js";
 import {getMatchs} from "~/lib/matchs";
 import MatchCard from "~/components/MatchCard";
-import {AuthGuard} from "~/lib/user";
+import {AuthGuard, getUser} from "~/lib/user";
+
+
 
 
 
 export default function MatchListPage() {
   const matchs = createAsyncStore(() => getMatchs(), { initialValue: [] });
   const [activeTab, setActiveTab] = createSignal<"prochains" | "anciens">("prochains");
+  const user = createAsync(() => getUser());
 
   //REDIRECTION SI USER PAS CONNECTE
   AuthGuard()
-
 
   return (
     <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
@@ -44,22 +46,22 @@ export default function MatchListPage() {
 
       {/* Contenu */}
       <div>
-        <Show when={activeTab() === "prochains"}>
-          <For each={matchs()
-            .filter(m => new Date(m.end_time).getTime() + 60 * 60 * 1000 > Date.now())
-            .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime())
-          }>
-            {(match) => <MatchCard match={match} />}
-          </For>
-        </Show>
-
-        <Show when={activeTab() === "anciens"}>
-          <For each={matchs()
-            .filter(m => new Date(m.end_time).getTime() + 60 * 60 * 1000 <= Date.now())
-            .sort((a, b) => new Date(b.end_time).getTime() - new Date(a.end_time).getTime())
-          }>
-            {(match) => <MatchCard match={match} />}
-          </For>
+<Show when={user()}>
+  <For
+          each={matchs()
+            .filter(m =>
+              activeTab() === "prochains"
+                ? new Date(m.end_time).getTime() > Date.now()
+                : new Date(m.end_time).getTime() <= Date.now()
+            )
+            .sort((a, b) =>
+              activeTab() === "prochains"
+                ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+                : new Date(b.end_time).getTime() - new Date(a.end_time).getTime()
+            )}
+        >
+          {(match) => <MatchCard match={match} user={user()} />}
+        </For>
         </Show>
       </div>
     </main>
