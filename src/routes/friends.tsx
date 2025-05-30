@@ -2,6 +2,7 @@ import { createAsync } from "@solidjs/router";
 import { createSignal, For, Show } from "solid-js";
 import { getFriends, getGuests } from "~/lib/friends";
 
+
 export default function FriendsPage() {
   const friendsList = createAsync(() => getFriends());
   const guestsList = createAsync(() => getGuests());
