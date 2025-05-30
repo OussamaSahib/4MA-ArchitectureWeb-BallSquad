@@ -67,7 +67,16 @@ export default function MatchPage(props: { params: { id: any; }; }) {
                           {i() + 1}
                         </td>
                         <td class="p-3 border border-black">
-                          {joueur ? `${joueur.firstname} ${joueur.lastname}` : "-"}
+                          {joueur ? (
+                            <div class="flex items-center gap-2">
+                              <img
+                                src={joueur.photo || "/images/profile_photos/icone_profile.png"}
+                                alt={`${joueur.firstname} ${joueur.lastname}`}
+                                class="w-8 h-8 rounded-full object-cover"
+                              />
+                              <span>{joueur.firstname} {joueur.lastname}</span>
+                            </div>
+                          ) : "-"}
                         </td>
                         <td class="p-2 border border-black text-center">
                           <img src="/images/status/pending.png" alt="Statut" class="h-6 w-6 mx-auto" />
