@@ -17,7 +17,7 @@ export default function FriendsPage() {
 
       {/* SECTION AMIS */}
       <section>
-        <h2 class="text-4xl font-bold mb-4">Mes Amis</h2>
+        <h2 class="text-5xl font-bold mb-4">Mes Amis</h2>
         <input
           type="text"
           value={searchFriend()}
@@ -31,15 +31,17 @@ export default function FriendsPage() {
               `${friend.friend.firstname} ${friend.friend.lastname}`.toLowerCase().includes(searchFriend().toLowerCase())
             )}>
               {(friend) => (
-                <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md">
-                  <img
-                    src={friend.friend.photo || "/images/profile_photos/icone_profile.png"}
-                    alt="Photo de profil"
-                    class="w-20 h-20 rounded-full mx-auto mb-3 object-cover border-2 border-[#c5ff36]"
-                  />
-                  <p class="text-[#c5ff36] font-bold uppercase text-sm">{friend.friend.firstname}</p>
-                  <p class="text-white text-sm">{friend.friend.lastname}</p>
-                </div>
+                <a href={`/friends/${friend.friend.id}`}>
+                  <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md hover:opacity-90 transition">
+                    <img
+                      src={friend.friend.photo || "/images/profile_photos/icone_profile.png"}
+                      alt="Photo de profil"
+                      class="w-20 h-20 rounded-full mx-auto mb-3 object-cover border-2 border-[#c5ff36]"
+                    />
+                    <p class="text-[#c5ff36] font-bold uppercase text-sm">{friend.friend.firstname}</p>
+                    <p class="text-white text-sm">{friend.friend.lastname}</p>
+                  </div>
+                </a>
               )}
             </For>
           </div>
@@ -49,7 +51,7 @@ export default function FriendsPage() {
 
       {/* SECTION INVITÉS */}
       <section>
-        <h2 class="text-4xl font-bold mb-4">Mes Invités</h2>
+        <h2 class="text-5xl font-bold mb-4">Mes Invités</h2>
         <input
           type="text"
           value={searchGuest()}
@@ -69,7 +71,7 @@ export default function FriendsPage() {
                     alt="Photo invité"
                     class="w-20 h-20 rounded-full mx-auto mb-3 object-cover opacity-80"
                   />
-                  <p class="text-white font-semibold text-sm">{guest.firstname}</p>
+                  <p class="text-[#c5ff36] font-semibold text-sm">{guest.firstname}</p>
                   <p class="text-white text-sm">{guest.lastname}</p>
                 </div>
               )}

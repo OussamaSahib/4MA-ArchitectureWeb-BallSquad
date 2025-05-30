@@ -71,3 +71,24 @@ export const getGuests = query(async () => {
     where: { userId: user.id },
   });
 }, "getGuests");
+
+
+// Détail d’un ami
+export const getFriendById = query(async (id: string) => {
+  "use server";
+  const user = await getUserFromSession();
+  if (!user) return null;
+
+  const friendId = parseInt(id, 10);
+
+// Vérifie que le user est bien ami avec cette personne
+const relation = await db.friend.findFirst({
+  where: {
+    userId: user.id,
+    friendId: friendId,
+  },
+  include: { friend: true },
+});
+
+return relation?.friend ?? null;
+}, "getFriendById");
