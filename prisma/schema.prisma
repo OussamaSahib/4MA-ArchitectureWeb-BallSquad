@@ -22,6 +22,10 @@ model User {
 
   createdMatches Match[] @relation("CreatedMatches")     
   joinedMatches  Match[] @relation("PlayerMatches")  
+
+  friends      Friend[] @relation("UserFriends")       // Les amis que j'ajoute
+  friendOf     Friend[] @relation("IsFriendOf")        // Les gens qui m'ajoutent
+  guests       Guest[]                                 // Les invités que j'ai créés
 }
 
 model Match {
@@ -38,4 +42,23 @@ model Match {
   id_creator       Int
   creator    User     @relation("CreatedMatches", fields: [id_creator], references: [id])
   players    User[]   @relation("PlayerMatches")
+}
+
+
+model Friend {
+  id       Int  @id @default(autoincrement())
+  userId   Int
+  friendId Int
+
+  user     User @relation("UserFriends", fields: [userId], references: [id])
+  friend   User @relation("IsFriendOf", fields: [friendId], references: [id])
+}
+
+model Guest {
+  id        Int    @id @default(autoincrement())
+  firstname String
+  lastname  String
+  userId    Int
+
+  user      User   @relation(fields: [userId], references: [id])
 }
