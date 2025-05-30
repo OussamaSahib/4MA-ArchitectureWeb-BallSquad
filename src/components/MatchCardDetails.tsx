@@ -1,4 +1,4 @@
-import {createSignal} from "solid-js";
+import {createSignal, Show} from "solid-js";
 
 
 type Match= {
@@ -10,6 +10,11 @@ type Match= {
   field: string;
   total_price: number;
   quantity_players: number;
+  id_creator: number; 
+  creator: {
+    firstname: string;
+    lastname: string;
+  }
 };
 
 function getSportIcon(sport: string) {
@@ -39,9 +44,10 @@ function formatHour(date: Date) {
 
 
 
-export default function MatchCardDetails(props: {match: Match}){
-  const {match}= props;
-  const pricePerPlayer= (match.total_price/match.quantity_players).toFixed(2);
+export default function MatchCardDetails(props: { match: Match; overridePrice?: number; user?: any }) {
+  const { match, overridePrice, user } = props;
+  const isCreator = user?.id === match.id_creator;
+  const pricePerPlayer = () => ((overridePrice ?? match.total_price) / match.quantity_players).toFixed(2);
 
   const [showModal, setShowModal]= createSignal(false);
   const iban= "BE71 0961 2345 6769";
@@ -78,7 +84,7 @@ export default function MatchCardDetails(props: {match: Match}){
         {/*PRIX PAR JOUEURPrix +ORGANISATEUR*/}
         <div class="flex justify-between items-center text-2xl font-semibold mt-4 mr-6">
             <span>
-                💰 <span class="font-bold text-red-600">{pricePerPlayer} € / joueur</span>
+                💰 <span class="font-bold text-red-600">{pricePerPlayer()} € / joueur</span>
                     <img
                         src="/images/buttons/info_button.png"
                         alt="Info"
@@ -86,8 +92,11 @@ export default function MatchCardDetails(props: {match: Match}){
                         onClick={() => setShowModal(true)}
                     />
             </span>
-            <span>
-                Organisé par <span class="underline">Oussama Sahib</span>
+            <span class="flex items-center gap-2">
+              Organisé par <span class="underline">{match.creator.firstname} {match.creator.lastname}</span>
+              <Show when={isCreator}>
+                <img src="/images/creator_icon.png" alt="Créateur" class="w-6 h-6" />
+              </Show>
             </span>
         </div>
 
@@ -103,8 +112,10 @@ export default function MatchCardDetails(props: {match: Match}){
                     </button>
                     <h3 class="text-3xl font-bold mb-6 text-center">Détails du paiement</h3>
 
-                    <p class="mb-3 text-lg">💰 <strong>Prix par joueur</strong> : {pricePerPlayer} €</p>
-                    <p class="mb-3 text-lg">👤 <strong>Organisateur</strong> : Oussama Sahib</p>
+                    <p class="mb-3 text-lg">💰 <strong>Prix par joueur</strong> : {pricePerPlayer()} €</p>
+                    <p class="mb-3 text-lg">
+                      👤 <strong>Organisateur</strong> : {match.creator.firstname} {match.creator.lastname}
+                    </p>
                     <p class="mb-3 text-lg">
                     🏦 <strong>IBAN</strong> : 
                     <span class="ml-2 font-mono bg-gray-100 px-2 py-1 rounded">{iban}</span>

@@ -1,14 +1,17 @@
 // src/components/EditMatchModal.tsx
 import { Match } from "@prisma/client";
-import { createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { editMatchAction } from "~/lib/matchs";
 
 
 
-export default function EditMatchModal(props: { match: Match; onClose: () => void }) {
-  const { match, onClose } = props;
+export default function EditMatchModal(props: { match: Match; onClose: () => void; onPriceChange?: (newPrice: number) => void }) {
+  const { match, onClose, onPriceChange } = props;
   const [euros, setEuros] = createSignal(Math.floor(match.total_price));
   const [cents, setCents] = createSignal(Math.round((match.total_price % 1) * 100));
+  createEffect(() => {
+    onPriceChange?.(euros() + cents() / 100);
+  });
 
   return (
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-end items-start pt-6 pr-100">
@@ -16,7 +19,7 @@ export default function EditMatchModal(props: { match: Match; onClose: () => voi
         <button class="absolute top-4 right-5 text-2xl cursor-pointer" onClick={onClose}>✕</button>
         <h2 class="text-4xl font-bold text-center mb-6">Modifier le Match</h2>
 
-        <form action={editMatchAction} method="post" class="space-y-6 text-left">
+        <form action={editMatchAction} method="post" class="space-y-6 text-left" onSubmit={() => props.onClose()}>
           <input type="hidden" name="id" value={match.id} />
 
           {/* Sport */}
@@ -66,9 +69,17 @@ export default function EditMatchModal(props: { match: Match; onClose: () => voi
             <label class="block font-bold mb-2">Date et Heures :</label>
             <div class="flex gap-2 items-center">
               <input name="date" type="date" required value={match.date.toISOString().substring(0, 10)} class="bg-transparent border text-white p-2 rounded w-36 mr-8 cursor-pointer" onClick={(e) => e.currentTarget.showPicker?.()} />
-              <input name="start_time" type="time" required value={match.start_time.toISOString().substring(11, 16)} class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer" onClick={(e) => e.currentTarget.showPicker?.()} />
+              <input name="start_time" type="time" required value={match.start_time.toLocaleTimeString("fr-BE", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+              })} class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer" onClick={(e) => e.currentTarget.showPicker?.()} />
               <span class="text-white text-xl">→</span>
-              <input name="end_time" type="time" required value={match.end_time.toISOString().substring(11, 16)} class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer" onClick={(e) => e.currentTarget.showPicker?.()} />
+              <input name="end_time" type="time" required value={match.end_time.toLocaleTimeString("fr-BE", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false
+              })} class="bg-transparent border text-white p-2 rounded w-26 cursor-pointer" onClick={(e) => e.currentTarget.showPicker?.()} />
             </div>
           </div>
 

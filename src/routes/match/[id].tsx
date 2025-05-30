@@ -1,22 +1,23 @@
-import {createAsync} from "@solidjs/router";
+import {createAsync, createAsyncStore, RouteDefinition} from "@solidjs/router";
 import {getMatchById} from "~/lib/matchs";
-import {createSignal, Show} from "solid-js";
+import {createResource, createSignal, For, Show} from "solid-js";
 import MatchCardDetails from "~/components/MatchCardDetails";
 import EditMatchPopup from "~/components/EditMatchPopup";
-import {AuthGuard} from "~/lib/user";
+import {AuthGuard, getUser} from "~/lib/user";
 
+
+export const route = {
+  preload({ params }) {
+    return getMatchById(params.id);
+  },
+} satisfies RouteDefinition;
 
 
 export default function MatchPage(props: { params: { id: any; }; }) {
-  const match = createAsync(() => getMatchById(props.params.id));
+  const match = createAsyncStore(() => getMatchById(props.params.id));
   const [showEdit, setShowEdit] = createSignal(false);
-
-  if (typeof window !== "undefined") {
-    document.addEventListener("submit", () => {
-      setTimeout(() => location.reload(), 100);
-    });
-  }
-
+  const [priceTotal, setPriceTotal] = createSignal<number | null>(null);
+  const user = createAsync(() => getUser());
 
   //REDIRECTION SI USER PAS CONNECTE
   AuthGuard()
@@ -36,16 +37,55 @@ export default function MatchPage(props: { params: { id: any; }; }) {
 
 
 
-  <Show when={match()}>
-    {(data) => (
-      <>
-        <MatchCardDetails match={data()} />
-        <Show when={showEdit()}>
-          <EditMatchPopup match={data()} onClose={() => setShowEdit(false)} />
-        </Show>
-      </>
-    )}
-  </Show>
+<Show when={match()}>
+  {(data) => (
+    <Show when={user()}>
+      {(currentUser) => (
+        <>
+          <MatchCardDetails match={data()} user={currentUser()} />
+          <Show when={showEdit()}>
+            <EditMatchPopup match={data()} onClose={() => setShowEdit(false)} onPriceChange={setPriceTotal} />
+          </Show>
+
+          <div class="max-w-3xl mx-auto overflow-x-auto">
+            <h2 class="text-3xl font-bold mt-10 mb-2">Joueurs inscrits</h2>
+            <table class="w-full min-w-[400px] border border-black rounded-xl overflow-hidden bg-[#3b3d44] shadow-lg text-white">
+              <thead class="bg-[#2d2f36] text-base">
+                <tr>
+                  <th class="p-3 border border-black text-center font-semibold w-12">N°</th>
+                  <th class="p-3 border border-black text-left font-semibold w-60">Prénom et Nom</th>
+                  <th class="p-3 border border-black text-center font-semibold w-28">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <For each={Array.from({ length: data().quantity_players })}>
+                  {(_, i) => {
+                    const joueur = data().players[i()];
+                    return (
+                      <tr class="border-t border-black">
+                        <td class="p-2 text-sm font-bold text-center bg-[#c5ff36] text-black border border-black">
+                          {i() + 1}
+                        </td>
+                        <td class="p-3 border border-black">
+                          {joueur ? `${joueur.firstname} ${joueur.lastname}` : "-"}
+                        </td>
+                        <td class="p-2 border border-black text-center">
+                          <img src="/images/status/pending.png" alt="Statut" class="h-6 w-6 mx-auto" />
+                        </td>
+                      </tr>
+                    );
+                  }}
+                </For>
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </Show>
+  )}
+</Show>
+
+  
 </main>
   );
 }
