@@ -92,3 +92,21 @@ const relation = await db.friend.findFirst({
 
 return relation?.friend ?? null;
 }, "getFriendById");
+
+
+
+// --- RECHERCHER DES UTILISATEURS ---
+export const getAllUsers = query(async () => {
+  "use server";
+  const user = await getUserFromSession();
+  if (!user) return [];
+
+  return await db.user.findMany({
+    where: {
+      id: { not: user.id },
+    },
+    take: 100, // tu peux adapter
+  });
+}, "getAllUsers");
+
+
