@@ -57,7 +57,8 @@ model Friend {
 model Guest {
   id        Int    @id @default(autoincrement())
   firstname String
-  lastname  String
+  lastname  String?
+  phone     String?
   userId    Int
 
   user      User   @relation(fields: [userId], references: [id])

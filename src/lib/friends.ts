@@ -3,15 +3,12 @@ import { getUserFromSession } from "~/lib/user";
 import { z } from "zod";
 import { action, query } from "@solidjs/router";
 
-// --- SCHÉMAS DE VALIDATION ---
+// --- SCHÉMA DE VALIDATION ---
 const friendSchema = z.object({
   friendId: z.string().transform(Number),
 });
 
-const guestSchema = z.object({
-  firstname: z.string().min(1),
-  lastname: z.string().min(1),
-});
+
 
 // --- AJOUTER UN AMI ---
 export const addFriend = async (form: FormData) => {
@@ -41,6 +38,18 @@ export const getFriends = query(async () => {
   });
 }, "getFriends");
 
+
+
+
+
+// --- SCHÉMA DE VALIDATION ---
+const guestSchema = z.object({
+  firstname: z.string(),
+  lastname: z.string(),
+  phone: z.string(),
+});
+
+
 // --- AJOUTER INVITÉ ---
 export const addGuest = async (form: FormData) => {
   "use server";
@@ -49,12 +58,14 @@ export const addGuest = async (form: FormData) => {
   const data = guestSchema.parse({
     firstname: form.get("firstname"),
     lastname: form.get("lastname"),
+    phone: form.get("phone")?.toString(),
   });
 
   await db.guest.create({
     data: {
       firstname: data.firstname,
       lastname: data.lastname,
+      phone: data.phone,
       userId: user.id,
     },
   });
