@@ -13,6 +13,8 @@ export default function RegisterPage() {
         <input type="text" name="lastname" placeholder="Nom" required />
         <input name="email" type="email" required class="bg-black text-white p-2 rounded" />
         <input name="password" type="password" required class="bg-black text-white p-2 rounded" />
+        <input type="tel" name="phone" placeholder="Numéro GSM" required class="bg-black text-white p-2 rounded" />
+        <input type="text" name="iban" placeholder="IBAN" required class="bg-black text-white p-2 rounded" />
         <button type="submit" class="mt-2 bg-blue-600 text-white p-2 rounded cursor-pointer">S'inscrire</button>
       </form>
 

@@ -15,6 +15,8 @@ export const RegisterUserSchema= z.object({
   password: z.string(),
   firstname: z.string(),
   lastname: z.string(),
+  phone: z.string(),
+  iban: z.string(),
 });
 
 export const LoginUserSchema= z.object({
@@ -31,17 +33,23 @@ const register = async (form: FormData) => {
     password: form.get("password"),
     firstname: form.get("firstname"),
     lastname: form.get("lastname"),
+    phone: form.get("phone"),
+    iban: form.get("iban"),
   });
 
   const hashed = await bcrypt.hash(user.password, 10);
 
   await db.user.create({
     data: {
-      email: user.email, 
+      email: user.email,
       password: hashed,
       firstname: user.firstname,
-      lastname: user.lastname,},
+      lastname: user.lastname,
+      phone: user.phone,
+      iban: user.iban,
+    },
   });
+
   return redirect("/");
 };
 
@@ -101,6 +109,8 @@ export const getUser = query(async () => {
         firstname: true,
         lastname: true,
         photo: true,
+        phone: true,
+        iban: true,
       },
     })
   } catch {
@@ -155,6 +165,9 @@ export const UpdateUserSchema = z.object({
   firstname: z.string(),
   lastname: z.string(),
   email: z.string().email(),
+  phone: z.string(),
+  iban: z.string(),
+  password: z.string(),
 });
 
 export const updateUser = action(async (form: FormData) => {
@@ -167,6 +180,9 @@ export const updateUser = action(async (form: FormData) => {
     firstname: form.get("firstname"),
     lastname: form.get("lastname"),
     email: form.get("email"),
+    phone: form.get("phone"),
+    iban: form.get("iban"),
+    password: form.get("password"),
   });
 
   const file = form.get("photo") as File;
@@ -200,12 +216,23 @@ export const updateUser = action(async (form: FormData) => {
     photoPath = `/images/profile_photos/${filename}`;
   }
 
+  const updateData: any = {
+    firstname: data.firstname,
+    lastname: data.lastname,
+    email: data.email,
+    phone: data.phone,
+    iban: data.iban,
+    photo: photoPath,
+  };
+
+  // Si un nouveau mot de passe a été fourni
+  if (data.password && data.password.trim() !== "") {
+    updateData.password = await bcrypt.hash(data.password, 10);
+  }
+
   await db.user.update({
     where: { id: user.id },
-    data: {
-      ...data,
-      photo: photoPath,
-    },
+    data: updateData,
   });
 
   if (data.email !== user.email) {

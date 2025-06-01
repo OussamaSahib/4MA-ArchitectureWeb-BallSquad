@@ -9,16 +9,16 @@ export default function EditProfile() {
   const [removePhoto, setRemovePhoto] = createSignal(false);
 
   return (
-    <main class="ml-48 text-center mx-auto text-gray-700 p-4 h-screen">
-      <div class="flex items-center justify-center gap-4 mb-6 ml-10">
+    <main class="ml-48 text-center mx-auto text-gray-700 p-4 pb-16 ">
+      <div class="flex items-center justify-center gap-4 mb-6 ml-1">
         <a href="/profile">
           <img
             src="/images/buttons/back_button.png"
             alt="Retour"
-            class="w-14 h-14 hover:opacity-80 transition"
+            class="w-16 h-16 hover:opacity-80 transition"
           />
         </a>
-        <h1 class="text-4xl text-white font-bold uppercase flex-1 text-center">
+        <h1 class="text-4xl text-white font-bold uppercase flex-1 text-center ml-4">
           Modifier mon profil
         </h1>
         <div class="w-22 h-8" /> {/* Espace vide pour équilibrer */}
@@ -30,7 +30,7 @@ export default function EditProfile() {
             action={updateUser}
             method="post"
             enctype="multipart/form-data"
-            class="max-w-md mx-auto text-left space-y-4 bg-white/5 p-8 rounded-xl border border-white/10 shadow-lg"
+            class="max-w-md mx-auto text-left space-y-4 bg-white/5 p-8 pt-5 pb-6 rounded-xl border border-white/10 shadow-lg"
           >
             {/* APERÇU DE LA PHOTO */}
             <div class="flex justify-center">
@@ -113,9 +113,39 @@ export default function EditProfile() {
               />
             </div>
 
+            <div>
+              <label class="text-white block mb-1">Téléphone</label>
+              <input
+                type="text"
+                name="phone"
+                value={u().phone ?? ""}
+                class="w-full px-4 py-2 rounded bg-white text-black"
+              />
+            </div>
+
+            <div>
+              <label class="text-white block mb-1">IBAN</label>
+              <input
+                type="text"
+                name="iban"
+                value={u().iban ?? ""}
+                class="w-full px-4 py-2 rounded bg-white text-black"
+              />
+            </div>
+
+            <div>
+              <label class="text-white block mb-1">Nouveau mot de passe</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Laisse vide si inchangé"
+                class="w-full px-4 py-2 rounded bg-white text-black"
+              />
+            </div>
+
             <button
               type="submit"
-              class="w-full bg-[#c5ff36] hover:bg-[#b1e835] text-black font-bold py-2 px-4 rounded transition cursor-pointer"
+              class="w-full bg-[#c5ff36] hover:bg-[#b1e835] text-black font-bold py-2 px-4 rounded transition mt-6 cursor-pointer"
             >
               Sauvegarder
             </button>

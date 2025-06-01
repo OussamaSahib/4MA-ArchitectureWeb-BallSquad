@@ -19,6 +19,8 @@ model User {
   firstname String
   lastname  String
   photo     String? 
+  phone     String  
+  iban      String
 
   createdMatches Match[] @relation("CreatedMatches")     
   joinedMatches  Match[] @relation("PlayerMatches")  

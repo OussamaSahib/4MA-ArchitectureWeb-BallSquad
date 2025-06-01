@@ -16,35 +16,65 @@ export default function Profile() {
   
   return (
     <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
-      <h1 class="text-6xl text-white font-bold uppercase mt-0 mb-8">PROFILE</h1>
+      <h1 class="text-5xl text-white font-bold uppercase mt-0 mb-8">PROFILE</h1>
 
       <div class="flex justify-center">
         <Show when={user()} fallback={<p class="text-white">Chargement...</p>}>
           {(u) => (
-            <div class="backdrop-blur-lg bg-white/5 border border-white/10 shadow-xl rounded-2xl p-4 w-full max-w-md text-center">
-              {/* Avatar */}
-              <div class="flex justify-center">
+            <div class="backdrop-blur-lg bg-white/5 border border-white/10 shadow-xl rounded-2xl p-6 pt-4 w-full max-w-md text-left">
+              {/* Avatar centré */}
+              <div class="flex justify-center mb-0">
                 <img
                   src={u().photo || "/images/profile_photos/icone_profile.png"}
                   alt="Avatar"
-                  class="rounded-full w-45 h-45 object-cover shadow cursor-pointer"
+                  class="rounded-full w-45 h-45 object-cover cursor-pointer"
                   onClick={() => setShowImage(true)}
                 />
               </div>
 
-              {/* Nom complet */}
-              <h2 class="text-2xl font-bold text-white">
+              {/* Nom centré */}
+              <h2 class="text-3xl font-bold text-center text-white mb-6 mt-1">
                 {u().firstname} {u().lastname}
               </h2>
-              <p class="text-gray-300 mt-1">{u().email}</p>
+
+              {/* Informations */}
+              <div class="text-white">
+                <p class="font-semibold underline text-xl mb-2">Informations :</p>
+
+                <div class="flex justify-between border-b border-gray-500 py-2">
+                  <span class="text-white">Mail :</span>
+                  <span class="text-[#c5ff36]">{u().email}</span>
+                </div>
+                <div class="flex justify-between border-b border-gray-500 py-2">
+                  <span class="text-white">Téléphone :</span>
+                  <span class="text-[#c5ff36]">{u().phone}</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-gray-500 py-2">
+                  <span class="text-white">IBAN :</span>
+                  <div class="flex items-center gap-2">
+                    <img
+                      src="/images/buttons/copy_button.png" // remplace avec le bon chemin
+                      alt="Copier"
+                      class="w-5 h-5 cursor-pointer hover:opacity-80"
+                      onClick={() => {
+                        navigator.clipboard.writeText(u().iban);
+                        alert("IBAN copié !");
+                      }}
+                    />
+                    <span class="text-[#c5ff36]">{u().iban}</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Bouton modifier */}
-              <a
-                href="/profile/edit"
-                class="mt-10 inline-block bg-[#c5ff36] hover:bg-[#b1e835] text-black font-semibold py-2 px-6 rounded-lg shadow transition cursor-pointer"
-              >
-                Modifier mon profil
-              </a>
+              <div class="flex justify-center mt-8">
+                <a
+                  href="/profile/edit"
+                  class="bg-[#72777d] hover:bg-[#5f6368] text-white font-semibold py-2 px-6 rounded-lg shadow transition cursor-pointer"
+                >
+                  Modifier mon profil
+                </a>
+              </div>
             </div>
           )}
         </Show>
