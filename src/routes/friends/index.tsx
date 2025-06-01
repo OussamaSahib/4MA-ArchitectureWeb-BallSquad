@@ -20,7 +20,13 @@ export default function FriendsPage() {
       {/* SECTION AMIS */}
       <section>
         <h2 class="text-4xl font-bold mb-4">Mes Amis</h2>
-        <div class="flex items-center mb-6">
+        <div
+          class={`flex items-center ${
+            (friendsList() ?? []).some(friend =>
+              `${friend.friend.firstname} ${friend.friend.lastname}`.toLowerCase().includes(searchFriend().toLowerCase())
+            ) ? "mb-6" : "mb-4"
+          }`}
+        >
           <input
             type="text"
             value={searchFriend()}
@@ -29,39 +35,53 @@ export default function FriendsPage() {
             class="w-full md:w-75 px-4 py-2 rounded bg-[#5f6368] text-white"
           />
           <img
-            src="\images\buttons\add_button.png"  // ← Remplace par le bon chemin vers ton image
+            src="\images\buttons\add_button.png"
             alt="Ajouter un ami"
             class="ml-4 w-10 h-10 cursor-pointer hover:scale-105 transition-transform"
             onClick={() => setShowAddFriend(true)}
           />
         </div>
+        
         <Show when={friendsList()} fallback={<p>Chargement...</p>}>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <For each={(friendsList() ?? []).filter(friend =>
+          <Show
+            when={(friendsList() ?? []).some(friend =>
               `${friend.friend.firstname} ${friend.friend.lastname}`.toLowerCase().includes(searchFriend().toLowerCase())
-            )}>
-              {(friend) => (
-                <a href={`/friends/${friend.friend.id}`}>
-                  <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md hover:opacity-90 transition">
-                    <img
-                      src={friend.friend.photo || "/images/profile_photos/icone_profile.png"}
-                      alt="Photo de profil"
-                      class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
-                    />
-                    <p class="text-white text-lg">{friend.friend.firstname}</p>
-                    <p class="text-white text-lg">{friend.friend.lastname}</p>
-                  </div>
-                </a>
-              )}
-            </For>
-          </div>
+            )}
+            fallback={<p class="text-lg text-gray-400">Aucun ami</p>}
+          >
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <For each={(friendsList() ?? []).filter(friend =>
+                `${friend.friend.firstname} ${friend.friend.lastname}`.toLowerCase().includes(searchFriend().toLowerCase())
+              )}>
+                {(friend) => (
+                  <a href={`/friends/${friend.friend.id}`}>
+                    <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md hover:opacity-90 transition">
+                      <img
+                        src={friend.friend.photo || "/images/profile_photos/icone_profile.png"}
+                        alt="Photo de profil"
+                        class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
+                      />
+                      <p class="text-white text-lg">{friend.friend.firstname}</p>
+                      <p class="text-white text-lg">{friend.friend.lastname}</p>
+                    </div>
+                  </a>
+                )}
+              </For>
+            </div>
+          </Show>
         </Show>
       </section>
 
       {/* SECTION INVITÉS */}
       <section>
         <h2 class="text-4xl font-bold mb-4">Mes Invités</h2>
-        <div class="flex items-center mb-6">
+        <div
+          class={`flex items-center ${
+            (guestsList() ?? []).some(guest =>
+              `${guest.firstname} ${guest.lastname}`.toLowerCase().includes(searchGuest().toLowerCase())
+            ) ? "mb-6" : "mb-4"
+          }`}
+        >
           <input
             type="text"
             value={searchGuest()}
@@ -70,30 +90,38 @@ export default function FriendsPage() {
             class="w-full md:w-75 px-4 py-2 rounded bg-[#5f6368] text-white"
           />
           <img
-            src="\images\buttons\add_button.png" // mets ton image ici
+            src="\images\buttons\add_button.png"
             alt="Ajouter un invité"
             class="ml-4 w-10 h-10 cursor-pointer hover:scale-105 transition-transform"
             onClick={() => setShowAddGuest(true)}
           />
         </div>
+
         <Show when={guestsList()} fallback={<p>Chargement...</p>}>
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <For each={(guestsList() ?? []).filter(guest =>
+          <Show
+            when={(guestsList() ?? []).some(guest =>
               `${guest.firstname} ${guest.lastname}`.toLowerCase().includes(searchGuest().toLowerCase())
-            )}>
-              {(guest) => (
-                <div class="bg-[#2e2e2e] p-3 rounded-lg text-center shadow-md">
-                  <img
-                    src="/images/profile_photos/icone_profile.png"
-                    alt="Photo invité"
-                    class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
-                  />
-                  <p class="text-white text-lg">{guest.firstname}</p>
-                  <p class="text-white text-lg">{guest.lastname}</p>
-                </div>
-              )}
-            </For>
-          </div>
+            )}
+            fallback={<p class="text-lg text-gray-400">Aucun invité</p>}
+          >
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              <For each={(guestsList() ?? []).filter(guest =>
+                `${guest.firstname} ${guest.lastname}`.toLowerCase().includes(searchGuest().toLowerCase())
+              )}>
+                {(guest) => (
+                  <div class="bg-[#2e2e2e] p-3 rounded-lg text-center shadow-md">
+                    <img
+                      src="/images/profile_photos/icone_profile.png"
+                      alt="Photo invité"
+                      class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
+                    />
+                    <p class="text-white text-lg">{guest.firstname}</p>
+                    <p class="text-white text-lg">{guest.lastname}</p>
+                  </div>
+                )}
+              </For>
+            </div>
+          </Show>
         </Show>
       </section>
 

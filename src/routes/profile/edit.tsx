@@ -9,7 +9,7 @@ export default function EditProfile() {
   const [removePhoto, setRemovePhoto] = createSignal(false);
 
   return (
-    <main class="ml-48 text-center mx-auto text-gray-700 p-4 pb-16 ">
+    <main class="ml-48 text-center mx-auto text-gray-700 p-4 pb-10 ">
       <div class="flex items-center justify-center gap-4 mb-6 ml-1">
         <a href="/profile">
           <img
