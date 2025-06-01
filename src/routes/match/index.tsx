@@ -19,7 +19,7 @@ export default function MatchListPage() {
 
   return (
     <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
-      <h1 class="text-6xl text-white font-bold uppercase mt-0 mb-8">MATCHS</h1>
+      <h1 class="text-5xl text-white font-bold uppercase mt-0 mb-8">MATCHS</h1>
 
       {/* Onglets */}
       <div class="flex justify-center gap-35 text-3xl text-white font-semibold mb-8">
@@ -48,21 +48,32 @@ export default function MatchListPage() {
       {/* Liste des matchs */}
       <div>
         <Show when={user()}>
-          <For
-            each={matchs()
-              .filter((m) =>
+          <Show
+            when={
+              matchs().filter((m) =>
                 activeTab() === "prochains"
                   ? new Date(m.end_time).getTime() > Date.now()
                   : new Date(m.end_time).getTime() <= Date.now()
-              )
-              .sort((a, b) =>
-                activeTab() === "prochains"
-                  ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-                  : new Date(b.end_time).getTime() - new Date(a.end_time).getTime()
-              )}
+              ).length > 0
+            }
+            fallback={<p class="text-gray-400 text-2xl">Aucun match</p>}
           >
-            {(match) => <MatchCard match={match} user={user()} />}
-          </For>
+            <For
+              each={matchs()
+                .filter((m) =>
+                  activeTab() === "prochains"
+                    ? new Date(m.end_time).getTime() > Date.now()
+                    : new Date(m.end_time).getTime() <= Date.now()
+                )
+                .sort((a, b) =>
+                  activeTab() === "prochains"
+                    ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+                    : new Date(b.end_time).getTime() - new Date(a.end_time).getTime()
+                )}
+            >
+              {(match) => <MatchCard match={match} user={user()} />}
+            </For>
+          </Show>
         </Show>
       </div>
     </main>
