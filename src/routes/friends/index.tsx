@@ -16,7 +16,7 @@ export default function FriendsPage() {
   const pendingAdd = useSubmissions(addFriendAction);
 
   return (
-    <main class="ml-55 mr-10 text-white p-6 space-y-12">
+    <main class="ml-55 mr-10 mb-10 text-white p-6 space-y-12">
       {/* SECTION AMIS */}
       <section>
         <h2 class="text-4xl font-bold mb-4">Mes Amis</h2>
@@ -26,7 +26,7 @@ export default function FriendsPage() {
             value={searchFriend()}
             onInput={(e) => setSearchFriend(e.currentTarget.value)}
             placeholder="Rechercher un ami..."
-            class="w-full md:w-96 px-4 py-2 rounded bg-[#5f6368] text-white"
+            class="w-full md:w-75 px-4 py-2 rounded bg-[#5f6368] text-white"
           />
           <img
             src="\images\buttons\add_button.png"  // ← Remplace par le bon chemin vers ton image
@@ -46,10 +46,10 @@ export default function FriendsPage() {
                     <img
                       src={friend.friend.photo || "/images/profile_photos/icone_profile.png"}
                       alt="Photo de profil"
-                      class="w-20 h-20 rounded-full mx-auto mb-3 object-cover border-2 border-[#c5ff36]"
+                      class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
                     />
-                    <p class="text-[#c5ff36] font-bold uppercase text-sm">{friend.friend.firstname}</p>
-                    <p class="text-white text-sm">{friend.friend.lastname}</p>
+                    <p class="text-white text-lg">{friend.friend.firstname}</p>
+                    <p class="text-white text-lg">{friend.friend.lastname}</p>
                   </div>
                 </a>
               )}
@@ -60,14 +60,14 @@ export default function FriendsPage() {
 
       {/* SECTION INVITÉS */}
       <section>
-        <h2 class="text-5xl font-bold mb-4">Mes Invités</h2>
+        <h2 class="text-4xl font-bold mb-4">Mes Invités</h2>
         <div class="flex items-center mb-6">
           <input
             type="text"
             value={searchGuest()}
             onInput={(e) => setSearchGuest(e.currentTarget.value)}
             placeholder="Rechercher un invité..."
-            class="w-full md:w-96 px-4 py-2 rounded bg-[#5f6368] text-white"
+            class="w-full md:w-75 px-4 py-2 rounded bg-[#5f6368] text-white"
           />
           <img
             src="\images\buttons\add_button.png" // mets ton image ici
@@ -82,14 +82,14 @@ export default function FriendsPage() {
               `${guest.firstname} ${guest.lastname}`.toLowerCase().includes(searchGuest().toLowerCase())
             )}>
               {(guest) => (
-                <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md">
+                <div class="bg-[#2e2e2e] p-3 rounded-lg text-center shadow-md">
                   <img
                     src="/images/profile_photos/icone_profile.png"
                     alt="Photo invité"
-                    class="w-20 h-20 rounded-full mx-auto mb-3 object-cover opacity-80"
+                    class="w-22 h-22 rounded-full mx-auto mb-1 object-cover opacity-80"
                   />
-                  <p class="text-[#c5ff36] font-semibold text-sm">{guest.firstname}</p>
-                  <p class="text-white text-sm">{guest.lastname}</p>
+                  <p class="text-white text-lg">{guest.firstname}</p>
+                  <p class="text-white text-lg">{guest.lastname}</p>
                 </div>
               )}
             </For>
@@ -123,7 +123,7 @@ export default function FriendsPage() {
                   !friendsList()?.some(f => f.friend.id === user.id) &&
                   `${user.firstname} ${user.lastname}`.toLowerCase().includes(search().toLowerCase())
                 )}
-                fallback={<p class="text-center text-sm text-gray-400">Aucun utilisateur trouvé</p>}
+                fallback={<p class="text-center text-lg text-gray-400">Aucun utilisateur trouvé</p>}
               >
                 <ul class="space-y-2 max-h-120 overflow-y-auto">
                   <For each={users().filter(user =>
@@ -135,9 +135,9 @@ export default function FriendsPage() {
                         <div class="flex items-center gap-3">
                           <img
                             src={user.photo || "/images/profile_photos/icone_profile.png"}
-                            class="w-10 h-10 rounded-full"
+                            class="w-15 h-15 rounded-full"
                           />
-                          <span>{user.firstname} {user.lastname}</span>
+                          <span class="text-xl">{user.firstname} {user.lastname}</span>
                         </div>
 
                         <form
@@ -152,7 +152,7 @@ export default function FriendsPage() {
                           }}
                         >
                           <input type="hidden" name="friendId" value={user.id} />
-                          <button class="bg-[#c5ff36] text-black px-2 py-1 rounded text-sm cursor-pointer">
+                          <button class="bg-[#c5ff36] hover:bg-[#b0e636] text-black px-2 py-2 mr-2 rounded text-xl cursor-pointer">
                             Ajouter
                           </button>
                         </form>
@@ -177,6 +177,7 @@ export default function FriendsPage() {
         </div>
       </Show>
 
+
       <Show when={showAddGuest()}>
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-start pt-20">
           <div class="bg-[#1a1a1a] p-6 rounded-lg shadow-xl w-full max-w-md text-white relative">
@@ -186,33 +187,43 @@ export default function FriendsPage() {
             >
               ✕
             </button>
-            <h2 class="text-2xl font-bold mb-4 text-center">Ajouter un invité</h2>
+            <h2 class="text-2xl font-bold mb-6 text-center">Ajouter un invité</h2>
 
-            <form
-              method="post"
-              action={addGuestAction}
-              class="space-y-4"
-            >
-              <input
-                type="text"
-                name="firstname"
-                placeholder="Prénom *"
-                required
-                class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
-              />
-              <input
-                type="text"
-                name="lastname"
-                placeholder="Nom"
-                class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
-              />
-              <input
-                type="tel"
-                name="phone"
-                placeholder="Numéro GSM"
-                class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
-              />
-              <button type="submit" class="bg-[#c5ff36] text-black px-4 py-2 rounded w-full font-bold">
+            <form method="post" action={addGuestAction} class="space-y-4">
+              {/* Prénom (obligatoire) */}
+              <div>
+                <label class="block mb-1">
+                  Prénom <span class="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstname"
+                  required
+                  class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
+                />
+              </div>
+
+              {/* Nom (optionnel) */}
+              <div>
+                <label class="block mb-1">Nom <span class="text-gray-400 text-sm">(optionnel)</span></label>
+                <input
+                  type="text"
+                  name="lastname"
+                  class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
+                />
+              </div>
+
+              {/* Téléphone (optionnel) */}
+              <div>
+                <label class="block mb-1">Numéro GSM <span class="text-gray-400 text-sm">(optionnel)</span></label>
+                <input
+                  type="tel"
+                  name="phone"
+                  class="w-full p-2 rounded bg-[#5f6368] text-white border border-gray-600"
+                />
+              </div>
+
+              <button type="submit" class="bg-[#c5ff36] hover:bg-[#b0e636] transition-colors text-black px-4 py-2 rounded w-full font-bold  mt-5 cursor-pointer">
                 Ajouter l'invité
               </button>
             </form>
