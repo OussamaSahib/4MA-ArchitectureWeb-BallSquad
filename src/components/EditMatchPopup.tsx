@@ -14,7 +14,7 @@ export default function EditMatchModal(props: { match: Match; onClose: () => voi
   });
 
   return (
-    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-end items-start pt-6 pr-100">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
       <div class="bg-[#1a1a1a] border border-white text-white p-6 rounded-xl w-full max-w-2xl relative">
         <button class="absolute top-4 right-5 text-2xl cursor-pointer" onClick={onClose}>✕</button>
         <h2 class="text-4xl font-bold text-center mb-6">Modifier le Match</h2>

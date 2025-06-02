@@ -46,7 +46,7 @@ export default function MatchCard(props: { match: Match, user?: any }) {
 
   return (
     <A href={`/match/${match.id}`}>
-      <div class="relative bg-[#c5ff36] text-black p-4 rounded-2xl max-w-3xl mx-auto shadow-lg mb-4">
+      <div class="relative bg-[#c5ff36] text-black p-3 pb-1 rounded-xl max-w-3xl mx-auto shadow-lg mb-4">
         {/* Icône creator */}
         <Show when={isCreator}>
           <img

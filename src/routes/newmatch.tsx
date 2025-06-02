@@ -5,8 +5,8 @@ export default function NewMatch() {
   AuthGuard();
 
   return (
-    <main class="ml-48 text-white px-4 py-6 md:px-10 lg:px-32">
-      <h1 class="text-5xl font-bold uppercase mb-8 text-center">Nouveau Match</h1>
+    <main class="ml-48 text-white px-4 py-6 md:px-10 lg:px-32 pb-12">
+      <h1 class="text-5xl font-bold uppercase mb-6 text-center">Nouveau Match</h1>
 
       <div class="w-full max-w-4xl mx-auto ">
         <form
