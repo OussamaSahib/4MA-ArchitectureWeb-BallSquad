@@ -44,6 +44,7 @@ model Match {
   id_creator       Int
   creator    User     @relation("CreatedMatches", fields: [id_creator], references: [id])
   players    User[]   @relation("PlayerMatches")
+  guests     Guest[]  @relation("GuestMatches")
 }
 
 
@@ -64,4 +65,6 @@ model Guest {
   userId    Int
 
   user      User   @relation(fields: [userId], references: [id])
+  matchId   Int?   
+  match     Match? @relation("GuestMatches", fields: [matchId], references: [id])
 }
