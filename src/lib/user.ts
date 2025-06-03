@@ -19,8 +19,7 @@ export const RegisterUserSchema= z.object({
   iban: z.string(),
 });
 
-
-export const RegisterAction= action(async (form: FormData)=>{
+export const RegisterAction= action(async(form: FormData)=>{
   "use server";
   const user= RegisterUserSchema.parse({
     email: form.get("email"),
@@ -40,7 +39,7 @@ export const RegisterAction= action(async (form: FormData)=>{
     };
   }
 
-  //Mot de passé haché
+  //Mot de passe haché
   const hashed= await bcrypt.hash(user.password, 10);
 
   await db.user.create({
@@ -59,42 +58,60 @@ export const RegisterAction= action(async (form: FormData)=>{
 
 
 
-
 //SESSION LOGIN (POST)
 export const LoginUserSchema= z.object({
   email: z.string(),
   password: z.string(),
 });
 
-const login= async (form: FormData)=>{
+export const LoginAction= action(async(form: FormData)=>{
   "use server";
   const user= LoginUserSchema.parse({
     email: form.get("email"),
     password: form.get("password"),
   });
 
-  console.log("Tentative de login pour :", user.email);
-  const record = await db.user.findUniqueOrThrow({
+  //MAIL
+  const record= await db.user.findUnique({
     where: {email: user.email},
   });
 
+  //Check si Mail existe
+  if (!record) {
+    console.log("Compte introuvable");
+    return {
+      success: false,
+      error: "EMAIL_NOT_FOUND",
+    };
+  }
+
+  //MOT DE PASSE
   const valid= await bcrypt.compare(user.password, record.password);
+
+   //Check si Bon Mot de passe
+  if (!valid){
+    console.log("Mot de passe incorrect");
+    return {
+      success: false,
+      error: "WRONG_PASSWORD",
+    };
+  }
+
 
   const email= user.email
   if (valid) {
     console.log("Utilisateur trouvé");
-    const session = await getSession()
+    const session= await getSession()
     await session.update({email })
     console.log("Session mise à jour pour :", email);
     return redirect("/match");
   }
   if (!valid) {
-    console.log("Utilisateur non trouvé");
+    console.log("Utilisateur non-trouvé");
     throw new Error("Mot de passe incorrect");
   }
-};
+})
 
-export const Login = action(login);
 
 
 

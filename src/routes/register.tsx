@@ -1,8 +1,7 @@
 import {useSubmissions} from "@solidjs/router";
 import {ErrorBoundary, Show, Suspense} from "solid-js";
 import {GuestGuard, RegisterAction} from "~/lib/user";
-import RegisterInput from "~/components/RegisterInput";
-
+import AuthentificationInput from "~/components/AuthentificationInput";
 
 
 
@@ -54,19 +53,19 @@ export default function RegisterPage(){
                 class="flex flex-col gap-4"
               >
               <div class="flex flex-col sm:flex-row gap-4">
-                <RegisterInput label="Prénom" name="firstname" type="text" required class="w-full sm:w-1/2" />
-                <RegisterInput label="Nom" name="lastname" type="text" required class="w-full sm:w-1/2" />
+                <AuthentificationInput label="Prénom" name="firstname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
+                <AuthentificationInput label="Nom" name="lastname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
               </div>
 
-                <RegisterInput label="Numéro GSM" name="phone" type="tel" required />
-                <RegisterInput label="IBAN" name="iban" type="text" required />
+                <AuthentificationInput label="Numéro GSM" name="phone" type="tel" required showRequiredMark={true}/>
+                <AuthentificationInput label="IBAN" name="iban" type="text" required showRequiredMark={true}/>
                 <div class="flex flex-col gap-1">
-                  <RegisterInput label="Mail" name="email" type="email" required />
-                  <Show when={last()?.result?.error === "EMAIL_EXISTS"}>
+                  <AuthentificationInput label="Email" name="email" type="email" required showRequiredMark={true}/>
+                  <Show when={last()?.result?.error==="EMAIL_EXISTS"}>
                     <span class="text-red-500 text-sm">Mail déjà existant</span>
                   </Show>
                 </div>
-                <RegisterInput label="Mot de passe" name="password" type="password" required />
+                <AuthentificationInput label="Mot de passe" name="password" type="password" required showRequiredMark={true}/>
 
                 <button
                   type="submit"
@@ -76,7 +75,7 @@ export default function RegisterPage(){
                 </button>
               </form>
 
-              <Show when={submissions.some((s) => s.pending)}>
+              <Show when={submissions.some((s)=> s.pending)}>
                 <p class="text-yellow-500 mt-2">Inscription en cours...</p>
               </Show>
             </div>
