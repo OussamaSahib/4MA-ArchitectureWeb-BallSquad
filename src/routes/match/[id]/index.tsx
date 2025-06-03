@@ -41,7 +41,7 @@ export default function MatchPage(props: { params: { id: any; }; }) {
                       <img
                         src="/images/buttons/back_button.png"
                         alt="Retour"
-                        class="w-12 mr-14 h-12 sm:w-14 sm:h-14"
+                        class="w-12 mr-14 h-12 sm:w-14 sm:h-14 hover:opacity-80 transition"
                       />
                     </a>
                   </div>

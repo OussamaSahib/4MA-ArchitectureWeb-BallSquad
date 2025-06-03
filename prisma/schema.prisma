@@ -22,12 +22,12 @@ model User {
   phone     String  
   iban      String
 
-  createdMatches Match[] @relation("CreatedMatches")     
-  joinedMatches  Match[] @relation("PlayerMatches")  
-
   friends      Friend[] @relation("UserFriends")       // Les amis que j'ajoute
   friendOf     Friend[] @relation("IsFriendOf")        // Les gens qui m'ajoutent
-  guests       Guest[]                                 // Les invités que j'ai créés
+  guests       Guest[] 
+  
+  createdMatches Match[] @relation("CreatedMatches")                                 // Les invités que j'ai créés
+  matchPlayers MatchPlayer[]
 }
 
 model Match {
@@ -43,8 +43,9 @@ model Match {
 
   id_creator       Int
   creator    User     @relation("CreatedMatches", fields: [id_creator], references: [id])
-  players    User[]   @relation("PlayerMatches")
-  guests     Guest[]  @relation("GuestMatches")
+
+  matchPlayers MatchPlayer[]
+  matchGuests  MatchGuest[]
 }
 
 
@@ -65,6 +66,36 @@ model Guest {
   userId    Int
 
   user      User   @relation(fields: [userId], references: [id])
-  matchId   Int?   
-  match     Match? @relation("GuestMatches", fields: [matchId], references: [id])
+  matchesGuest MatchGuest[]
+}
+
+
+model MatchPlayer {
+  id        Int    @id @default(autoincrement())
+  match     Match  @relation(fields: [matchId], references: [id])
+  matchId   Int
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int
+  status    MatchStatus @default(WAITING)
+
+  @@unique([matchId, userId])
+}
+
+
+model MatchGuest{
+  id       Int         @id @default(autoincrement())
+  match    Match       @relation(fields: [matchId], references: [id])
+  matchId  Int
+  guest    Guest       @relation(fields: [guestId], references: [id])
+  guestId  Int
+  status   MatchStatus @default(NOT_ASKED)
+
+  @@unique([matchId, guestId])
+}
+
+
+enum MatchStatus {
+  CONFIRMED
+  WAITING
+  NOT_ASKED
 }

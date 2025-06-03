@@ -15,13 +15,13 @@ export const getMatchs= query(async ()=>{
     where: {
       OR: [
         {id_creator: user.id},
-        {players: {some: {id: user.id}}},
+        {matchPlayers: {some: { userId: user.id}}},
       ],
     },
     distinct: ['id'],
     include:{
-      players: true,
       creator: true,
+      matchPlayers: true,
     },
   });
 }, "getMatchs");
@@ -32,7 +32,10 @@ export const getMatchById= query(async (id: string)=>{
   const matchId= parseInt(id, 10);
   return await db.match.findUnique({
     where: {id: matchId},
-    include: {players: true, creator: true, guests: true},
+    include: {
+      creator: true, 
+      matchPlayers: {include: {user: true}}, 
+      matchGuests: { include: { guest: true } },}, 
   });
 }, "getMatchById");
 
@@ -86,8 +89,11 @@ export const addMatch= async (form: FormData)=>{
         total_price,
         quantity_players: parseInt(match.quantity_players, 10),
         id_creator: user.id,
-        players:{
-          connect: {id: user.id}, //Créateur est aussi joueur
+        matchPlayers: {
+          create: {
+            userId: user.id,
+            status: "CONFIRMED",
+          },
         },
       },
     });
@@ -144,17 +150,16 @@ export const addPlayerToMatch = action(async (form: FormData) => {
     userId: form.get("userId"),
   });
 
-  await db.match.update({
-    where: { id: data.matchId },
+  await db.matchPlayer.create({
     data: {
-      players: {
-        connect: { id: data.userId },
-      },
+      matchId: data.matchId,
+      userId: data.userId,
+      status: "NOT_ASKED", 
     },
   });
 
-  
-});
+    
+  });
 
 
 
@@ -175,8 +180,13 @@ export const addGuestToMatch = action(async (form: FormData) => {
   });
 
   // On relie l'invité au match
-  await db.guest.update({
-    where: { id: data.guestId },
-    data: { match: { connect: { id: data.matchId } } },
-  });
-});
+  await db.matchGuest.create({
+      data: {
+        matchId: data.matchId,
+        guestId: data.guestId,
+        status: "NOT_ASKED",
+        },
+      }
+    )
+  }
+)

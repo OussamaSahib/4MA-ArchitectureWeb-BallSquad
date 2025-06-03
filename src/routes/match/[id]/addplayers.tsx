@@ -1,7 +1,15 @@
 import { createSignal, For, Show } from "solid-js";
-import { createAsyncStore } from "@solidjs/router";
+import { createAsyncStore, RouteDefinition, useSubmissions } from "@solidjs/router";
 import { getMatchById, addPlayerToMatch, addGuestToMatch } from "~/lib/matchs";
 import { getFriends, getGuests } from "~/lib/friends";
+
+
+
+export const route = {
+  preload: (ctx) => getMatchById(ctx.params.id),
+} satisfies RouteDefinition;
+
+
 
 export default function AddPlayersPage(props: { params: { id: string } }) {
   const match = createAsyncStore(() => getMatchById(props.params.id));
@@ -11,18 +19,30 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
   const [searchFriend, setSearchFriend] = createSignal("");
   const [searchGuest, setSearchGuest] = createSignal("");
 
-  const isAlreadyPlayer = (userId: number) =>
-    match()?.players?.some((p: any) => p.id === userId);
+  const playerSubmissions = useSubmissions(addPlayerToMatch);
+  const guestSubmissions = useSubmissions(addGuestToMatch);
 
-  const isAlreadyGuest = (guestId: number) =>
-    match()?.guests?.some((g: any) => g.id === guestId);
+  const isAlreadyPlayer = (userId: number) => {
+    const result = match()?.matchPlayers?.some((p: any) => p.user?.id === userId);
+    return result;
+  };
+
+  const isAlreadyGuest = (guestId: number) => {
+    const result = match()?.matchGuests?.some((g: any) => g.guest?.id === guestId);
+    return result;
+  };
+
+  const isBeingAddedPlayer = (userId: number) =>
+    playerSubmissions.some((sub) => sub.input[0].get("userId") === String(userId));
+
+  const isBeingAddedGuest = (guestId: number) =>
+    guestSubmissions.some((sub) => sub.input[0].get("guestId") === String(guestId));
 
   return (
     <main class="ml-46 mt-1 mr-10 mb-10 text-white p-6 space-y-12">
       <Show when={match()}>
         {(data) => (
           <>
-            {/* TITRE + BOUTON RETOUR */}
             <div class="flex items-center gap-4 mb-6">
               <a href={`/match/${data().id}`}>
                 <img
@@ -31,15 +51,12 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                   class="w-14 h-14 hover:opacity-80 transition"
                 />
               </a>
-              <h1 class="text-5xl font-bold underline">
-                Ajouter des joueurs
-              </h1>
+              <h1 class="text-5xl font-bold underline">Ajouter des joueurs</h1>
             </div>
 
             {/* AMIS */}
             <section class="ml-18">
               <h2 class="text-3xl font-semibold mb-4">Amis</h2>
-
               <div class="flex items-center mb-6">
                 <input
                   type="text"
@@ -49,7 +66,6 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                   class="w-full md:w-80 px-4 py-2 rounded bg-[#5f6368] text-white"
                 />
               </div>
-
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 <For each={friends().filter(f =>
                   `${f.friend.firstname} ${f.friend.lastname}`
@@ -66,13 +82,17 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                       <p class="text-white text-lg">{f.friend.firstname}</p>
                       <p class="text-white text-lg mb-2">{f.friend.lastname}</p>
 
-                      <Show when={!isAlreadyPlayer(f.friend.id)} fallback={
-                        <p class="text-sm text-green-400">✔ Ajouté</p>
-                      }>
+                      <Show
+                        when={!isAlreadyPlayer(f.friend.id) && !isBeingAddedPlayer(f.friend.id)}
+                        fallback={<p class="text-sm text-green-400">✔ Ajouté</p>}
+                      >
                         <form action={addPlayerToMatch} method="post">
                           <input type="hidden" name="matchId" value={data().id} />
                           <input type="hidden" name="userId" value={f.friend.id} />
-                          <button type="submit" class="bg-[#c5ff36] text-black px-3 py-1 rounded font-bold text-sm">
+                          <button
+                            type="submit"
+                            class="bg-[#c5ff36] hover:bg-[#aadd2f] text-black px-3 py-1 rounded font-bold text-sm cursor-pointer"
+                          >
                             Ajouter
                           </button>
                         </form>
@@ -86,7 +106,6 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
             {/* INVITÉS */}
             <section class="ml-18">
               <h2 class="text-3xl font-semibold mb-4">Invités</h2>
-
               <div class="flex items-center mb-6">
                 <input
                   type="text"
@@ -96,7 +115,6 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                   class="w-full md:w-80 px-4 py-2 rounded bg-[#5f6368] text-white"
                 />
               </div>
-
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 <For each={guests().filter(g =>
                   `${g.firstname} ${g.lastname}`
@@ -113,13 +131,17 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                       <p class="text-white text-lg">{g.firstname}</p>
                       <p class="text-white text-lg mb-2">{g.lastname}</p>
 
-                      <Show when={!isAlreadyGuest(g.id)} fallback={
-                        <p class="text-sm text-green-400">✔ Ajouté</p>
-                      }>
+                      <Show
+                        when={!isAlreadyGuest(g.id) && !isBeingAddedGuest(g.id)}
+                        fallback={<p class="text-sm text-green-400">✔ Ajouté</p>}
+                      >
                         <form action={addGuestToMatch} method="post">
                           <input type="hidden" name="matchId" value={data().id} />
                           <input type="hidden" name="guestId" value={g.id} />
-                          <button type="submit" class="bg-[#c5ff36] text-black px-3 py-1 rounded font-bold text-sm">
+                          <button
+                            type="submit"
+                            class="bg-[#c5ff36] hover:bg-[#aadd2f] text-black px-3 py-1 rounded font-bold text-sm cursor-pointer"
+                          >
                             Ajouter
                           </button>
                         </form>
