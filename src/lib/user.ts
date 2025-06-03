@@ -3,13 +3,13 @@ import bcrypt from "bcryptjs";
 import {z} from "zod";
 import {getSession} from "./session";
 import {action, createAsync, query, redirect, useNavigate} from "@solidjs/router";
-import { createEffect } from "solid-js";
+import {createEffect} from "solid-js";
 import fs from "fs";
 import path from "path";
 
 
 
-
+//REGISTER (POST)
 export const RegisterUserSchema= z.object({
   email: z.string(),
   password: z.string(),
@@ -19,16 +19,10 @@ export const RegisterUserSchema= z.object({
   iban: z.string(),
 });
 
-export const LoginUserSchema= z.object({
-  email: z.string(),
-  password: z.string(),
-});
 
-
-//POST REGISTER
-const register = async (form: FormData) => {
+export const RegisterAction= action(async (form: FormData)=>{
   "use server";
-  const user = RegisterUserSchema.parse({
+  const user= RegisterUserSchema.parse({
     email: form.get("email"),
     password: form.get("password"),
     firstname: form.get("firstname"),
@@ -37,10 +31,20 @@ const register = async (form: FormData) => {
     iban: form.get("iban"),
   });
 
-  const hashed = await bcrypt.hash(user.password, 10);
+  //Check si Mail existe
+  const existing= await db.user.findUnique({where: {email: user.email}});
+  if (existing){
+    return {
+      success: false,
+      error: "EMAIL_EXISTS",
+    };
+  }
+
+  //Mot de passé haché
+  const hashed= await bcrypt.hash(user.password, 10);
 
   await db.user.create({
-    data: {
+    data:{
       email: user.email,
       password: hashed,
       firstname: user.firstname,
@@ -49,29 +53,32 @@ const register = async (form: FormData) => {
       iban: user.iban,
     },
   });
-
+  
   return redirect("/");
-};
-
-export const Register = action(register); // ← ici la magie
+})
 
 
 
 
-//GET+SESSION LOGIN
-const login = async (form: FormData)=>{
+//SESSION LOGIN (POST)
+export const LoginUserSchema= z.object({
+  email: z.string(),
+  password: z.string(),
+});
+
+const login= async (form: FormData)=>{
   "use server";
-  const user = LoginUserSchema.parse({
+  const user= LoginUserSchema.parse({
     email: form.get("email"),
     password: form.get("password"),
   });
 
   console.log("Tentative de login pour :", user.email);
   const record = await db.user.findUniqueOrThrow({
-    where: { email: user.email },
+    where: {email: user.email},
   });
 
-  const valid = await bcrypt.compare(user.password, record.password);
+  const valid= await bcrypt.compare(user.password, record.password);
 
   const email= user.email
   if (valid) {
@@ -79,13 +86,12 @@ const login = async (form: FormData)=>{
     const session = await getSession()
     await session.update({email })
     console.log("Session mise à jour pour :", email);
-    console.log("YES")
     return redirect("/match");
   }
   if (!valid) {
     console.log("Utilisateur non trouvé");
-  throw new Error("Mot de passe incorrect");
-}
+    throw new Error("Mot de passe incorrect");
+  }
 };
 
 export const Login = action(login);
