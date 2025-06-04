@@ -31,7 +31,7 @@ export default function AuthentificationInput(props:{
           name={props.name}
           required={props.required}
           placeholder={props.label ?? props.name}
-          class="bg-gray-600 text-white p-2 pr-10 rounded w-full focus:outline-none focus:ring-2 focus:ring-lime-400"
+          class="bg-gray-600 text-white p-2 pr-10 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#c5ff36]"
         />
 
         <Show when={passwordField}>

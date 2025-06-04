@@ -30,12 +30,12 @@ export default function LoginPage(){
 
           {/*FORMULAIRE*/}
           <div class="bg-[#1a1a1a] rounded-lg shadow-md border border-white/20 flex flex-col md:flex-row w-full max-w-4xl overflow-hidden">
-            {/*Logo*/}
+            {/*LOGO*/}
             <div class="w-full md:w-1/3 flex items-center justify-center p-6">
               <img src="/images/ballsquad_logo/ballsquad_logo_green.png" alt="BallSquad Logo" class="h-auto max-w-[150px] md:max-w-full" />
             </div>
 
-            {/*Form*/}
+            {/*FORM*/}
             <div class="w-full md:w-2/3 p-6">
               <h2 class="text-3xl font-bold mb-6 text-center">Connexion</h2>
                 <form action={LoginAction} method="post" class="flex flex-col gap-4">
