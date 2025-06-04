@@ -58,7 +58,7 @@ export const RegisterAction= action(async(form: FormData)=>{
 
 
 
-//SESSION LOGIN (POST)
+//LOGIN SESSION (POST)
 export const LoginUserSchema= z.object({
   email: z.string(),
   password: z.string(),
@@ -97,7 +97,6 @@ export const LoginAction= action(async(form: FormData)=>{
     };
   }
 
-
   const email= user.email
   if (valid) {
     console.log("Utilisateur trouvé");
@@ -113,19 +112,28 @@ export const LoginAction= action(async(form: FormData)=>{
 })
 
 
+//LOGOUT SESSION (POST)
+export const LogoutAction= action(async()=>{
+  "use server"
+  const session= await getSession();
+  await session.clear();
+  console.log("Session avant clear:", session.data);
+
+  return redirect("/");
+});
 
 
 
-//Check if the user is connected
-export const getUser = query(async () => {
+//RÉCUPÈRE USER INFOS +CHECK SI USER CONNECTE (GET) 
+export const getUser= query(async()=>{
   "use server"
   try {
-    const session = await getSession()
+    const session= await getSession()
     if (!session.data.email) {
       return null
     }
     return await db.user.findUniqueOrThrow({
-      where: { email: session.data.email },
+      where: {email: session.data.email},
       select: {
         id: true,
         email: true,
@@ -142,23 +150,9 @@ export const getUser = query(async () => {
 }, "getUser")
 
 
-//REDIRECTION VERS "/" SI USER PAS CONNECTE
-export function AuthGuard(){
-  const user= createAsync(()=>getUser());
-  const navigate= useNavigate();
-
-  createEffect(() => {
-    if (user()===null){
-      navigate("/");
-    }
-  });
-
-  return user; 
-}
-
-//REDIRECTION VERS "/MATCH "SI USER CONNECTE
+//POUR REGISTER ET LOGIN: VIA GET USER, REDIRECTION VERS "/MATCH "SI USER CONNECTE
 export function GuestGuard(){
-  const user= createAsync(()=>getUser());
+  const user= createAsync(()=> getUser());
   const navigate= useNavigate();
 
   createEffect(()=>{
@@ -170,6 +164,25 @@ export function GuestGuard(){
   return user;
 }
 
+
+//A SUPPRIMER
+//REDIRECTION VERS "/" SI USER PAS CONNECTE
+export function AuthGuard(){
+  const user= createAsync(()=> getUser());
+  const navigate= useNavigate();
+
+  createEffect(()=>{
+    if (user()===null){
+      navigate("/");
+    }
+  });
+
+  return user; 
+}
+
+
+
+//A SUPPRIMER
 //RECUPERER DONNES USER
 export async function getUserFromSession() {
   "use server";

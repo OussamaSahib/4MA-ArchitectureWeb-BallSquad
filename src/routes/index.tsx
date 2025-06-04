@@ -6,7 +6,9 @@ import AuthentificationInput from "~/components/AuthentificationInput";
 
 
 export default function LoginPage(){
+  //REDIRECTION SI USER DEJA CONNECTE
   GuestGuard();
+
   const submissions= useSubmissions(LoginAction);
   const last= ()=> submissions[submissions.length -1];
 
@@ -16,7 +18,7 @@ export default function LoginPage(){
 
         <main class="min-h-screen bg-black text-white flex flex-col items-center gap-0 p-4">
 
-          {/* BOUTON "CRÉER UN COMPTE" ALIGNÉ À DROITE */}
+          {/*BOUTON ALLANT A LA PAGE REGISTER POUR CRÉER UN COMPTE*/}
           <div class="w-full flex justify-end mb-4 mr-10">
             <a
               href="/register"
@@ -26,14 +28,14 @@ export default function LoginPage(){
             </a>
           </div>
 
-          {/* CONTAINER FORMULAIRE */}
+          {/*FORMULAIRE*/}
           <div class="bg-[#1a1a1a] rounded-lg shadow-md border border-white/20 flex flex-col md:flex-row w-full max-w-4xl overflow-hidden">
-            {/* LOGO */}
+            {/*Logo*/}
             <div class="w-full md:w-1/3 flex items-center justify-center p-6">
-              <img src="/images/ballsquad_logo.png" alt="BallSquad Logo" class="h-auto max-w-[150px] md:max-w-full" />
+              <img src="/images/ballsquad_logo/ballsquad_logo_green.png" alt="BallSquad Logo" class="h-auto max-w-[150px] md:max-w-full" />
             </div>
 
-            {/* FORMULAIRE */}
+            {/*Form*/}
             <div class="w-full md:w-2/3 p-6">
               <h2 class="text-3xl font-bold mb-6 text-center">Connexion</h2>
                 <form action={LoginAction} method="post" class="flex flex-col gap-4">

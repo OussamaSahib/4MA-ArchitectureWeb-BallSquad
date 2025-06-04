@@ -6,7 +6,9 @@ import AuthentificationInput from "~/components/AuthentificationInput";
 
 
 export default function RegisterPage(){
+  //REDIRECTION SI USER DEJA CONNECTE
   GuestGuard();
+
   const submissions= useSubmissions(RegisterAction);
   const last= ()=> submissions[submissions.length -1];
 
@@ -38,7 +40,7 @@ export default function RegisterPage(){
             {/*Logo*/}
             <div class="w-full md:w-1/3 flex items-center justify-center p-6">
               <img
-                src="/images/ballsquad_logo.png"
+                src="/images/ballsquad_logo/ballsquad_logo_green.png"
                 alt="BallSquad Logo"
                 class="h-auto max-w-[150px] md:max-w-full"
               />
