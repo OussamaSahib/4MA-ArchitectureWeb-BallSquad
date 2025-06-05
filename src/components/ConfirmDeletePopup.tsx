@@ -11,12 +11,12 @@ export default function ConfirmDeletePopup(props:{onCancel: ()=> void; friendId:
           <button class="px-4 py-2 rounded bg-gray-500 hover:bg-gray-600 cursor-pointer" onClick={props.onCancel}>
             Annuler
           </button>
-          <form method="post" action="/friends/delete">
+          {/* <form method="post" action="/friends/delete">
             <input type="hidden" name="friendId" value={props.friendId} />
             <button type="submit" class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white cursor-pointer">
               Confirmer
             </button>
-          </form>
+          </form> */}
         </div>
       </div>
     </div>

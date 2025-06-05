@@ -42,8 +42,7 @@ export const getMatchById= query(async (id: string)=>{
 
 
 
-//POST NEW MATCH
-//Schéma de validation
+//NEW MATCH (POST)
 const matchSchema= z.object({
   sport: z.string(),
   date: z.string(),
@@ -56,9 +55,7 @@ const matchSchema= z.object({
   quantity_players: z.string(),
 });
 
-
-//POST: Crée un nouveau match
-export const addMatch= async (form: FormData)=>{
+export const AddMatchAction= action(async(form: FormData)=>{
   "use server";
 
   const user= await getUserFromSession();
@@ -98,10 +95,8 @@ export const addMatch= async (form: FormData)=>{
       },
     });
   return redirect("/match");
-};
+})
 
-//Export de l'action
-export const addMatchAction= action(addMatch);
 
 
 
