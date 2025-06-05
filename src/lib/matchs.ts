@@ -132,54 +132,52 @@ export const EditMatchAction= action(async (form: FormData)=>{
 
 
 
-//POST PLAYER OFTHE MATCH
-const addPlayerSchema = z.object({
+//AJOUT JOUEUR AU MATCH (POST)
+const addPlayerSchema= z.object({
   matchId: z.string().transform(Number),
   userId: z.string().transform(Number),
 });
 
-export const addPlayerToMatch = action(async (form: FormData) => {
+export const AddPlayerToMatchACtion= action(async(form: FormData)=>{
   "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) throw new Error("Non connecté");
 
-  const data = addPlayerSchema.parse({
+  const data= addPlayerSchema.parse({
     matchId: form.get("matchId"),
     userId: form.get("userId"),
   });
 
   await db.matchPlayer.create({
-    data: {
+    data:{
       matchId: data.matchId,
       userId: data.userId,
       status: "NOT_ASKED", 
     },
   });
-
-    
-  });
+});
 
 
 
-
+//AJOUT INVITÉ AU MATCH (POST)
 const addGuestToMatchSchema = z.object({
   matchId: z.string().transform(Number),
   guestId: z.string().transform(Number),
 });
 
-export const addGuestToMatch = action(async (form: FormData) => {
+export const AddGuestToMatchAction= action(async(form: FormData)=>{
   "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) throw new Error("Non connecté");
 
-  const data = addGuestToMatchSchema.parse({
+  const data= addGuestToMatchSchema.parse({
     matchId: form.get("matchId"),
     guestId: form.get("guestId"),
   });
 
   // On relie l'invité au match
   await db.matchGuest.create({
-      data: {
+      data:{
         matchId: data.matchId,
         guestId: data.guestId,
         status: "NOT_ASKED",
