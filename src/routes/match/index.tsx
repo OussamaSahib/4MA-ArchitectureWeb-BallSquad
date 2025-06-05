@@ -1,81 +1,104 @@
-import {createAsync, createAsyncStore, RouteDefinition} from "@solidjs/router";
-import {createSignal, For, Show} from "solid-js";
+import {createAsyncStore, RouteDefinition, useNavigate} from "@solidjs/router";
+import {createEffect, createSignal, ErrorBoundary, For, Show, Suspense} from "solid-js";
 import {getMatchs} from "~/lib/matchs";
 import MatchCard from "~/components/MatchCard";
-import {AuthGuard, getUser} from "~/lib/user";
+import {getUser} from "~/lib/user";
 
 
-export const route = {
-  preload() {
-    return getMatchs();
+export const route={
+  preload: ()=>{
+    getUser();
+    getMatchs();
+
   },
 } satisfies RouteDefinition;
 
+
 export default function MatchListPage() {
-  AuthGuard(); // sécurité
   const matchs = createAsyncStore(() => getMatchs(), { initialValue: [] });
+  const user = createAsyncStore(() => getUser());
   const [activeTab, setActiveTab] = createSignal<"prochains" | "anciens">("prochains");
-  const user = createAsync(() => getUser());
+
+  createEffect(()=>{
+    if (user()===null) {
+      useNavigate()("/");
+    }
+  });
+
+  const filtered = () =>
+    matchs()
+      .filter((m) =>
+        activeTab() === "prochains"
+          ? new Date(m.end_time).getTime() > Date.now()
+          : new Date(m.end_time).getTime() <= Date.now()
+      )
+      .sort((a, b) =>
+        activeTab() === "prochains"
+          ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+          : new Date(b.end_time).getTime() - new Date(a.end_time).getTime()
+      );
 
   return (
-    <main class="ml-48 text-center mx-auto text-gray-700 p-4 overflow-y-scroll h-screen">
-      <h1 class="text-5xl text-white font-bold uppercase mt-0 mb-8">MATCHS</h1>
+    <ErrorBoundary fallback={<div class="text-red-500 text-center mt-4">Une erreur est survenue !</div>}>
+      <Suspense fallback={<div class="text-white text-center mt-4">Chargement des matchs…</div>}>
 
-      {/* Onglets */}
-      <div class="flex justify-center gap-35 text-3xl text-white font-semibold mb-8">
-        <button
-          onClick={() => setActiveTab("prochains")}
-          class={`pb-1 border-b-4 transition cursor-pointer ${
-            activeTab() === "prochains"
-              ? "border-[#c5ff36]"
-              : "border-transparent hover:border-gray-400"
-          }`}
-        >
-          Prochains
-        </button>
-        <button
-          onClick={() => setActiveTab("anciens")}
-          class={`pb-1 border-b-4 transition cursor-pointer ${
-            activeTab() === "anciens"
-              ? "border-[#c5ff36]"
-              : "border-transparent hover:border-gray-400"
-          }`}
-        >
-          Anciens
-        </button>
-      </div>
+        <main class="text-white px-4 mt-10 md:mt-0 py-6 pb-12 md:ml-48 md:px-10 lg:px-28 min-h-screen">
 
-      {/* Liste des matchs */}
-      <div>
-        <Show when={user()}>
-          <Show
-            when={
-              matchs().filter((m) =>
-                activeTab() === "prochains"
-                  ? new Date(m.end_time).getTime() > Date.now()
-                  : new Date(m.end_time).getTime() <= Date.now()
-              ).length > 0
-            }
-            fallback={<p class="text-gray-400 text-2xl">Aucun match</p>}
-          >
-            <For
-              each={matchs()
-                .filter((m) =>
-                  activeTab() === "prochains"
-                    ? new Date(m.end_time).getTime() > Date.now()
-                    : new Date(m.end_time).getTime() <= Date.now()
-                )
-                .sort((a, b) =>
-                  activeTab() === "prochains"
-                    ? new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
-                    : new Date(b.end_time).getTime() - new Date(a.end_time).getTime()
-                )}
+          <div class="flex items-center justify-center mb-8">
+            <h1 class="text-5xl font-bold uppercase text-center flex-1">MATCHS</h1>
+
+            <a
+              href="/match/newmatch"
+              aria-label="Ajouter un match"
+              class="ml-auto"
             >
-              {(match) => <MatchCard match={match} user={user()} />}
-            </For>
+              <img
+                src="/images/buttons/add_button.png"
+                alt="Ajouter un match"
+                class="w-14 h-14 hover:scale-110 transition-transform duration-200"
+              />
+            </a>
+          </div>
+
+          {/* Onglets */}
+          <div class="flex justify-center gap-8 sm:gap-12 text-xl sm:text-2xl md:text-3xl font-semibold mb-8">
+            <button
+              onClick={() => setActiveTab("prochains")}
+              class={`pb-1 border-b-4 transition cursor-pointer ${
+                activeTab() === "prochains"
+                  ? "border-[#c5ff36]"
+                  : "border-transparent hover:border-gray-400"
+              }`}
+            >
+              Prochains
+            </button>
+            <button
+              onClick={() => setActiveTab("anciens")}
+              class={`pb-1 border-b-4 transition cursor-pointer ${
+                activeTab() === "anciens"
+                  ? "border-[#c5ff36]"
+                  : "border-transparent hover:border-gray-400"
+              }`}
+            >
+              Anciens
+            </button>
+          </div>
+
+          {/* Liste des matchs */}
+          <Show when={user()} fallback={<p class="text-gray-400 text-center">Chargement de l'utilisateur…</p>}>
+            <Show
+              when={filtered().length > 0}
+              fallback={<p class="text-gray-400 text-center text-xl">Aucun match</p>}
+            >
+              <div class="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-2">
+                <For each={filtered()}>
+                  {(match) => <MatchCard match={match} user={user()} />}
+                </For>
+              </div>
+            </Show>
           </Show>
-        </Show>
-      </div>
-    </main>
+        </main>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

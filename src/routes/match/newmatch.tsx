@@ -27,8 +27,27 @@ export default function NewMatch(){
   return (
     <ErrorBoundary fallback={<div class="text-red-500 text-center mt-4">Une erreur est survenue !</div>}>
       <Suspense fallback={<div class="text-white text-center mt-4">Chargement en cours…</div>}>
-        <main class="text-white px-4 py-6 pb-12 md:ml-48 md:px-10 lg:px-28">
-          <h1 class="text-5xl font-bold uppercase mb-6 text-center">Nouveau Match</h1>
+        <main class="text-white px-4 pt-4 pb-12 md:ml-48 md:px-10 lg:px-28">
+          <div class="flex items-center justify-between mb-6 mt-10 md:mt-0">
+            {/* Bouton retour */}
+            <div class="ml-2 md:-ml-10 lg:-ml-16">
+              <a href="/match" aria-label="Retour aux matchs" class="inline-block">
+                <img
+                  src="/images/buttons/back_button.png"
+                  alt="Retour"
+                  class="w-16 h-16 hover:scale-110 transition-transform duration-200"
+                />
+              </a>
+            </div>
+
+            {/* Titre */}
+            <h1 class="text-4xl sm:text-5xl font-bold uppercase text-center flex-1">
+              Nouveau Match
+            </h1>
+
+            {/* Espace vide pour équilibrer le centrage */}
+            <div class="w-16 h-16 invisible" />
+          </div>
 
           <div class="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-12">
             <form

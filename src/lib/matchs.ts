@@ -5,42 +5,6 @@ import {redirect} from "@solidjs/router"
 import {getUserFromSession} from "./user";
 
 
-//GET MATCHS(créés ou rejoints par l'utilisateur connecté)
-export const getMatchs= query(async ()=>{
-  "use server";
-  const user= await getUserFromSession();
-  if (!user) return [];
-
-  return await db.match.findMany({
-    where: {
-      OR: [
-        {id_creator: user.id},
-        {matchPlayers: {some: { userId: user.id}}},
-      ],
-    },
-    distinct: ['id'],
-    include:{
-      creator: true,
-      matchPlayers: true,
-    },
-  });
-}, "getMatchs");
-
-//GET DETAILS MATCH
-export const getMatchById= query(async (id: string)=>{
-  "use server";
-  const matchId= parseInt(id, 10);
-  return await db.match.findUnique({
-    where: {id: matchId},
-    include: {
-      creator: true, 
-      matchPlayers: {include: {user: true}}, 
-      matchGuests: { include: { guest: true } },}, 
-  });
-}, "getMatchById");
-
-
-
 
 //NEW MATCH (POST)
 const matchSchema= z.object({
@@ -96,6 +60,45 @@ export const AddMatchAction= action(async(form: FormData)=>{
     });
   return redirect("/match");
 })
+
+
+
+
+//RÉCUPÈRE MATCHS (créés ou rejoints par l'utilisateur connecté) (GET)
+export const getMatchs= query(async ()=>{
+  "use server";
+  const user= await getUserFromSession();
+  if (!user) return [];
+
+  return await db.match.findMany({
+    where: {
+      OR: [
+        {id_creator: user.id},
+        {matchPlayers: {some: { userId: user.id}}},
+      ],
+    },
+    distinct: ['id'],
+    include:{
+      creator: true,
+      matchPlayers: true,
+    },
+  });
+}, "getMatchs");
+
+
+
+//GET DETAILS MATCH
+export const getMatchById= query(async (id: string)=>{
+  "use server";
+  const matchId= parseInt(id, 10);
+  return await db.match.findUnique({
+    where: {id: matchId},
+    include: {
+      creator: true, 
+      matchPlayers: {include: {user: true}}, 
+      matchGuests: { include: { guest: true } },}, 
+  });
+}, "getMatchById");
 
 
 

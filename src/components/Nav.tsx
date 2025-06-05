@@ -40,9 +40,6 @@ export default function Nav(){
             <li class={active("/match")}>
               <a href="/match" class="w-full text-center px-3 py-2 block">MES MATCHS</a>
             </li>
-            <li class={active("/newmatch")}>
-              <a href="/newmatch" class="w-full text-center px-3 py-2 block">NOUVEAU MATCH</a>
-            </li>
             <li class={active("/money")}>
               <a href="/money" class="w-full text-center px-3 py-2 block">ARGENT</a>
             </li>
@@ -105,9 +102,6 @@ export default function Nav(){
           <ul class="flex flex-col items-start gap-6 text-black text-xl font-bold p-6">
             <li class={active("/match")}>
               <a href="/match" class="w-full px-3 py-2 block" onClick={() => setIsOpen(false)}>MES MATCHS</a>
-            </li>
-            <li class={active("/newmatch")}>
-              <a href="/newmatch" class="w-full px-3 py-2 block" onClick={() => setIsOpen(false)}>NOUVEAU MATCH</a>
             </li>
             <li class={active("/money")}>
               <a href="/money" class="w-full px-3 py-2 block" onClick={() => setIsOpen(false)}>ARGENT</a>
