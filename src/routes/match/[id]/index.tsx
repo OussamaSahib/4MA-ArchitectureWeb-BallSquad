@@ -1,85 +1,81 @@
-import {createAsync, createAsyncStore, RouteDefinition} from "@solidjs/router";
+import {createAsyncStore, RouteDefinition, useNavigate} from "@solidjs/router";
 import {getMatchById} from "~/lib/matchs";
-import {createResource, createSignal, For, Show} from "solid-js";
+import {createEffect, ErrorBoundary, Show, Suspense} from "solid-js";
 import MatchCardDetails from "~/components/MatchCardDetails";
-import EditMatchPopup from "~/components/EditMatchPopup";
-import {AuthGuard, getUser} from "~/lib/user";
-import PlayerListPopup from "~/components/PlayerListTable";
+import {getUser} from "~/lib/user";
 import PlayerListTable from "~/components/PlayerListTable";
 
 
+// PRELOAD
 export const route = {
   preload({ params }) {
+    getUser();
     return getMatchById(params.id);
   },
 } satisfies RouteDefinition;
 
 
-export default function MatchPage(props: { params: { id: any; }; }) {
+
+export default function MatchPage(props: { params: { id: string } }) {
   const match = createAsyncStore(() => getMatchById(props.params.id));
-  const [showEdit, setShowEdit] = createSignal(false);
-  const [priceTotal, setPriceTotal] = createSignal<number | null>(null);
-  const user = createAsync(() => getUser());
-  
+  const user = createAsyncStore(() => getUser());
 
-  //REDIRECTION SI USER PAS CONNECTE
-  AuthGuard()
-
+  createEffect(()=>{
+    if (user()===null) {
+      useNavigate()("/");
+    }
+  });
 
   return (
-    <main class="ml-0 md:ml-48 text-white p-4 sm:p-0 md:p-8 md:pt-5 md:pl-4">
+    <ErrorBoundary fallback={<div class="text-red-500 text-center mt-4">Une erreur est survenue !</div>}>
+      <Suspense fallback={<div class="text-white text-center mt-4">Chargement du match…</div>}>
+       <main class="text-white p-4 mt-12 md:mt-0 md:p-8 md:ml-48">
 
-      <Show when={match()}>
-        {(data) => (
-          <Show when={user()}>
-            {(currentUser) => (
-              <>
-                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6">
-                  {/* Bouton retour */}
-                  <div class="mt-2 self-start">
-                    <a href="/match">
-                      <img
-                        src="/images/buttons/back_button.png"
-                        alt="Retour"
-                        class="w-12 mr-14 h-12 sm:w-14 sm:h-14 hover:opacity-80 transition"
-                      />
-                    </a>
-                  </div>
 
-                  {/* MatchCardDetails */}
-                  <div class="flex-grow">
-                    <MatchCardDetails match={data()} user={currentUser()} />
-                  </div>
+          <Show when={match()} fallback={<div>Chargement des données du match…</div>}>
+            {(data) => (
+              <Show when={user()} fallback={<div>Chargement de l'utilisateur…</div>}>
+                {(currentUser) => (
+                  <>
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6">
+                      {/* Retour */}
+                      <div class="mt-2 self-start">
+                        <a href="/match">
+                          <img
+                            src="/images/buttons/back_button.png"
+                            alt="Retour"
+                            class="w-12 h-12 sm:w-14 sm:h-14 hover:opacity-80 transition"
+                          />
+                        </a>
+                      </div>
 
-                  {/* Bouton modifier */}
-                  <div class="mt-2 self-start ml-0">
-                    <button onClick={() => setShowEdit(true)}>
-                      <img
-                        src="/images/buttons/edit_button.png"
-                        alt="Modifier"
-                        class="w-12 h-12 ml-5 sm:w-14 sm:h-14 cursor-pointer"
-                      />
-                    </button>
-                  </div>
-                </div>
+                      {/* Détails match */}
+                      <div class="flex-grow">
+                        <MatchCardDetails match={data()} user={currentUser()} />
+                      </div>
 
-                {/* Popup d’édition */}
-                <Show when={showEdit()}>
-                  <EditMatchPopup
-                    match={data()}
-                    onClose={() => setShowEdit(false)}
-                    onPriceChange={setPriceTotal}
-                  />
-                </Show>
+                      {/* Modifier */}
+                      <div class="mt-2 self-start">
+                        <a href={`/match/${data().id}/editmatch`} aria-label="Modifier le match">
+                          <img
+                            src="/images/buttons/edit_button.png"
+                            alt="Modifier"
+                            class="w-12 h-12 sm:w-14 sm:h-14 hover:opacity-80 transition"
+                          />
+                        </a>
+                      </div>
+                    </div>
 
-                {/* Liste des joueurs */}
-                <PlayerListTable match={data()} />
-              </>
+
+                    {/* Liste joueurs */}
+                    <PlayerListTable match={data()} />
+                  </>
+                )}
+              </Show>
             )}
           </Show>
-        )}
-      </Show>
-    </main>
-
-      );
-    }
+        </main>
+      </Suspense>
+    </ErrorBoundary>
+  );
+}

@@ -87,7 +87,7 @@ export const getMatchs= query(async ()=>{
 
 
 
-//GET DETAILS MATCH
+//RÉCUPÈRE DETAILS MATCH (GET)
 export const getMatchById= query(async (id: string)=>{
   "use server";
   const matchId= parseInt(id, 10);
@@ -105,13 +105,13 @@ export const getMatchById= query(async (id: string)=>{
 
 
 //UPDATE EDIT MATCH (-->POST)
-export const editMatch = async (form: FormData) => {
+export const EditMatchAction= action(async (form: FormData)=>{
   "use server";
-  const id = parseInt(form.get("id") as string, 10);
+  const id= parseInt(form.get("id") as string, 10);
 
   await db.match.update({
     where: {id},
-    data: {
+    data:{
       sport: form.get("sport") as string,
       place: form.get("place") as string,
       field: form.get("field") as string,
@@ -126,9 +126,9 @@ export const editMatch = async (form: FormData) => {
   });
 
   return redirect(`/match/${id}`);
-};
+})
 
-export const editMatchAction = action(editMatch);
+
 
 
 
