@@ -124,7 +124,7 @@ export const LogoutAction= action(async()=>{
 
 
 
-//RÉCUPÈRE USER INFOS +CHECK SI USER CONNECTE (GET) 
+//CHECK SI USER CONNECTE +RÉCUPÈRE DONNÉES USER (GET) 
 export const getUser= query(async()=>{
   "use server"
   try {
@@ -148,6 +148,26 @@ export const getUser= query(async()=>{
     return null
   }
 }, "getUser")
+
+
+//RÉCUPÈRE DONNÉES USER (Á UTILISER DANS D'AUTRES ACTION, QUERY) (GET)
+export async function getUserFromSession(){
+  const session= await getSession();
+  if (!session.data.email) return null;
+
+  return await db.user.findUnique({
+    where: {email: session.data.email},
+    select:{
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      photo: true,
+      phone: true,
+      iban: true,
+    },
+  });
+}
 
 
 //POUR REGISTER ET LOGIN: VIA GET USER, REDIRECTION VERS "/MATCH "SI USER CONNECTE
@@ -182,17 +202,7 @@ export function AuthGuard(){
 
 
 
-//A SUPPRIMER
-//RECUPERER DONNES USER
-export async function getUserFromSession() {
-  "use server";
-  const session = await getSession();
-  if (!session.data.email) return null;
 
-  return await db.user.findUnique({
-    where: { email: session.data.email },
-  });
-}
 
 
 

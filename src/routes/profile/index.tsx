@@ -1,6 +1,6 @@
 import {createAsyncStore, RouteDefinition, useNavigate} from "@solidjs/router";
 import {createEffect, ErrorBoundary, Show, Suspense} from "solid-js";
-import {AuthGuard, getUser} from "~/lib/user";
+import {getUser} from "~/lib/user";
 import ProfileCard from "~/components/ProfileCard";
 
 

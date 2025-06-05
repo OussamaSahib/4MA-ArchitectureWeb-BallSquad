@@ -1,123 +1,144 @@
-import { db } from "~/lib/db";
-import { getUserFromSession } from "~/lib/user";
-import { z } from "zod";
-import { action, query } from "@solidjs/router";
+import {db} from "~/lib/db";
+import {getUserFromSession} from "~/lib/user";
+import {z} from "zod";
+import {action, query} from "@solidjs/router";
 
-// --- SCHÉMA DE VALIDATION ---
-const friendSchema = z.object({
+
+
+//AMIS
+const friendSchema= z.object({
   friendId: z.string().transform(Number),
 });
 
-
-
-// --- AJOUTER UN AMI ---
-export const addFriend = async (form: FormData) => {
+//AJOUTER UN AMI (POST)
+export const AddFriendAction= action(async(form: FormData)=>{
   "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) throw new Error("Non connecté");
-  const data = friendSchema.parse({ friendId: form.get("friendId") });
+  const data= friendSchema.parse({friendId: form.get("friendId")});
 
   await db.friend.create({
-    data: {
+    data:{
       userId: user.id,
       friendId: data.friendId,
     },
   });
-};
-export const addFriendAction = action(addFriend);
+})
 
-// --- LISTER AMIS ---
-export const getFriends = query(async () => {
+
+//RÉCUPERER LISTE AMIS (GET)
+export const getFriends= query(async()=>{
   "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) return [];
 
   return await db.friend.findMany({
-    where: { userId: user.id },
-    include: { friend: true },
+    where: {userId: user.id},
+    include: {friend: true},
   });
 }, "getFriends");
 
 
 
 
-
-// --- SCHÉMA DE VALIDATION ---
-const guestSchema = z.object({
-  firstname: z.string(),
-  lastname: z.string(),
-  phone: z.string(),
-});
-
-
-// --- AJOUTER INVITÉ ---
-export const addGuest = async (form: FormData) => {
+//RÉCUPÉRER DONNÉES D'1 AMI (GET)
+export const getFriendById= query(async(id: string)=>{
   "use server";
-  const user = await getUserFromSession();
-  if (!user) throw new Error("Non connecté");
-  const data = guestSchema.parse({
-    firstname: form.get("firstname"),
-    lastname: form.get("lastname"),
-    phone: form.get("phone")?.toString(),
-  });
-
-  await db.guest.create({
-    data: {
-      firstname: data.firstname,
-      lastname: data.lastname,
-      phone: data.phone,
-      userId: user.id,
-    },
-  });
-};
-export const addGuestAction = action(addGuest);
-
-// --- LISTER INVITÉS ---
-export const getGuests = query(async () => {
-  "use server";
-  const user = await getUserFromSession();
-  if (!user) return [];
-
-  return await db.guest.findMany({
-    where: { userId: user.id },
-  });
-}, "getGuests");
-
-
-// Détail d’un ami
-export const getFriendById = query(async (id: string) => {
-  "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) return null;
 
-  const friendId = parseInt(id, 10);
+  const friendId= parseInt(id, 10);
 
-// Vérifie que le user est bien ami avec cette personne
-const relation = await db.friend.findFirst({
-  where: {
-    userId: user.id,
-    friendId: friendId,
-  },
-  include: { friend: true },
-});
+  //Vérifie que le user est bien ami
+  const relation= await db.friend.findFirst({
+    where: {
+      userId: user.id,
+      friendId: friendId,
+    },
+    include: {friend: true},
+  });
 
 return relation?.friend ?? null;
 }, "getFriendById");
 
 
 
-// --- RECHERCHER DES UTILISATEURS ---
-export const getAllUsers = query(async () => {
+//LISTE DE TT LES USERS TOTAL (GET)
+export const getAllUsers= query(async ()=>{
   "use server";
-  const user = await getUserFromSession();
+  const user= await getUserFromSession();
   if (!user) return [];
 
   return await db.user.findMany({
-    where: {
-      id: { not: user.id },
+    where:{
+      id: {not: user.id},
     },
-    take: 100, // tu peux adapter
+    take: 100,
   });
 }, "getAllUsers");
+
+
+
+
+
+
+
+//INVITÉS
+const guestSchema= z.object({
+  firstname: z.string(),
+  lastname: z.string(),
+  phone: z.string(),
+});
+
+//AJOUTER UN INVITÉ (POST)
+export const AddGuestAction= action(async(form: FormData)=>{
+  "use server";
+  const user= await getUserFromSession();
+  if (!user) throw new Error("Non connecté");
+  const data= guestSchema.parse({
+    firstname: form.get("firstname"),
+    lastname: form.get("lastname"),
+    phone: form.get("phone")?.toString(),
+  });
+
+  await db.guest.create({
+    data:{
+      firstname: data.firstname,
+      lastname: data.lastname,
+      phone: data.phone,
+      userId: user.id,
+    },
+  });
+})
+
+
+//RÉCUPERER LISTE INVITÉS (GET)
+export const getGuests= query(async()=>{
+  "use server";
+  const user= await getUserFromSession();
+  if (!user) return [];
+
+  return await db.guest.findMany({
+    where: {userId: user.id},
+  });
+}, "getGuests");
+
+
+
+//RÉCUPÉRER DONNÉES D'1 INVITÉ (GET)
+export const getGuestById= query(async(id: string)=>{
+  "use server";
+  const user= await getUserFromSession();
+  if (!user) return null;
+
+  const guestId= parseInt(id, 10);
+
+  return await db.guest.findFirst({
+    where:{
+      id: guestId,
+      userId: user.id,
+    },
+  });
+}, "getGuestById");
 
 

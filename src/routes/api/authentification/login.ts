@@ -1,5 +1,5 @@
 import type {APIEvent} from "@solidjs/start/server";
-import {getUser, LoginAction} from "~/lib/user";
+import {getUserFromSession, LoginAction} from "~/lib/user";
 
 
 export async function POST(event: APIEvent){
@@ -7,5 +7,5 @@ export async function POST(event: APIEvent){
 }
 
 export async function GET(event: APIEvent){
-    return await getUser();
+    return await getUserFromSession();
 }
