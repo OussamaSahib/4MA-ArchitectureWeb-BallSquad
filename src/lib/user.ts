@@ -19,7 +19,7 @@ export const RegisterUserSchema= z.object({
   iban: z.string(),
 });
 
-export const RegisterAction= action(async(form: FormData)=>{
+export const Register= async(form: FormData)=>{
   "use server";
   const user= RegisterUserSchema.parse({
     email: form.get("email"),
@@ -53,8 +53,9 @@ export const RegisterAction= action(async(form: FormData)=>{
     },
   });
   
-  return redirect("/");
-})
+  return {success: true};
+}
+export const RegisterAction= action(Register)
 
 
 
@@ -64,7 +65,7 @@ export const LoginUserSchema= z.object({
   password: z.string(),
 });
 
-export const LoginAction= action(async(form: FormData)=>{
+export const Login=async(form: FormData)=>{
   "use server";
   const user= LoginUserSchema.parse({
     email: form.get("email"),
@@ -101,15 +102,22 @@ export const LoginAction= action(async(form: FormData)=>{
   if (valid) {
     console.log("Utilisateur trouvé");
     const session= await getSession()
-    await session.update({email })
+    await session.update({email})
     console.log("Session mise à jour pour :", email);
-    return redirect("/match");
+    return {
+      success: true,
+      email: user.email,
+    };
   }
   if (!valid) {
     console.log("Utilisateur non-trouvé");
     throw new Error("Mot de passe incorrect");
   }
-})
+}
+export const LoginAction= action(Login)
+
+
+
 
 
 //LOGOUT SESSION (POST)
@@ -129,7 +137,7 @@ export const getUser= query(async()=>{
   "use server"
   try {
     const session= await getSession()
-    if (!session.data.email) {
+    if (!session.data.email){
       return null
     }
     return await db.user.findUniqueOrThrow({
@@ -183,24 +191,6 @@ export function GuestGuard(){
 
   return user;
 }
-
-
-//A SUPPRIMER
-//REDIRECTION VERS "/" SI USER PAS CONNECTE
-export function AuthGuard(){
-  const user= createAsync(()=> getUser());
-  const navigate= useNavigate();
-
-  createEffect(()=>{
-    if (user()===null){
-      navigate("/");
-    }
-  });
-
-  return user; 
-}
-
-
 
 
 

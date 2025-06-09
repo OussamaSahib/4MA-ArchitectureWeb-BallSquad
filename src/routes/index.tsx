@@ -1,7 +1,7 @@
-import {useSubmissions} from "@solidjs/router";
-import {ErrorBoundary, Show, Suspense} from "solid-js";
+import {useNavigate, useSubmissions} from "@solidjs/router";
+import {createEffect, ErrorBoundary, Show, Suspense} from "solid-js";
 import {GuestGuard, LoginAction} from "~/lib/user";
-import AuthentificationInput from "~/components/AuthentificationInput";
+import InputAuthentification from "~/components/InputAuthentification";
 
 
 
@@ -9,8 +9,17 @@ export default function LoginPage(){
   //REDIRECTION SI USER DEJA CONNECTE
   GuestGuard();
 
+  //REDIRECTION SI BON LOGIN
+  const navigate = useNavigate();
+  createEffect(()=>{
+  if (last()?.result?.success=== true){
+    navigate("/match");
+  }});
+
+  //SUBMISSION FORM
   const submissions= useSubmissions(LoginAction);
   const last= ()=> submissions[submissions.length -1];
+
 
   return (
     <ErrorBoundary fallback={<div class="text-red-500 p-4">Une erreur est survenue !</div>}>
@@ -41,14 +50,14 @@ export default function LoginPage(){
                 <form action={LoginAction} method="post" class="flex flex-col gap-4">
 
                   <div class="flex flex-col gap-1">
-                    <AuthentificationInput label="Email" name="email" type="email" required showRequiredMark={false} />
+                    <InputAuthentification label="Email" name="email" type="email" required showRequiredMark={false} />
                       <Show when={last()?.result?.error === "EMAIL_NOT_FOUND"}>
                         <span class="text-red-500 text-sm">Ce compte n'existe pas</span>
                       </Show>
                   </div>
 
                   <div class="flex flex-col gap-1">
-                    <AuthentificationInput label="Mot de passe" name="password" type="password" required showRequiredMark={false} />
+                    <InputAuthentification label="Mot de passe" name="password" type="password" required showRequiredMark={false} />
                       <Show when={last()?.result?.error==="WRONG_PASSWORD"}>
                         <span class="text-red-500 text-sm">Mot de passe incorrect</span>
                       </Show>

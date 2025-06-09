@@ -1,7 +1,13 @@
 import type {APIEvent} from "@solidjs/start/server";
-import {RegisterAction} from "~/lib/user";
+import {Register} from "~/lib/user";
 
 
 export async function POST(event: APIEvent){
-  return await RegisterAction(await event.request.formData())
+  const formData= await event.request.formData();
+  const result= await Register(formData);
+
+  return new Response(JSON.stringify(result),{
+    status: 200,
+    headers: {"Content-Type": "application/json"},
+  });
 }

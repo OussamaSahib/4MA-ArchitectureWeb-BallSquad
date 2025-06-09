@@ -1,7 +1,7 @@
-import {useSubmissions} from "@solidjs/router";
-import {ErrorBoundary, Show, Suspense} from "solid-js";
+import {useNavigate, useSubmissions} from "@solidjs/router";
+import {createEffect, ErrorBoundary, Show, Suspense} from "solid-js";
 import {GuestGuard, RegisterAction} from "~/lib/user";
-import AuthentificationInput from "~/components/AuthentificationInput";
+import InputAuthentification from "~/components/InputAuthentification";
 
 
 
@@ -9,6 +9,15 @@ export default function RegisterPage(){
   //REDIRECTION SI USER DEJA CONNECTE
   GuestGuard();
 
+  //REDIRECTION SI CREATION COMPTE RÉUSSI
+  const navigate= useNavigate();
+  createEffect(()=>{
+    if (last()?.result?.success){
+      navigate("/");
+    }
+  });
+
+  //SUBMISSION FORM
   const submissions= useSubmissions(RegisterAction);
   const last= ()=> submissions[submissions.length -1];
 
@@ -55,19 +64,19 @@ export default function RegisterPage(){
                 class="flex flex-col gap-4"
               >
               <div class="flex flex-col sm:flex-row gap-4">
-                <AuthentificationInput label="Prénom" name="firstname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
-                <AuthentificationInput label="Nom" name="lastname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
+                <InputAuthentification label="Prénom" name="firstname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
+                <InputAuthentification label="Nom" name="lastname" type="text" class="w-full sm:w-1/2" required showRequiredMark={true}/>
               </div>
 
-                <AuthentificationInput label="Numéro GSM" name="phone" type="tel" required showRequiredMark={true}/>
-                <AuthentificationInput label="IBAN" name="iban" type="text" required showRequiredMark={true}/>
+                <InputAuthentification label="Numéro GSM" name="phone" type="tel" required showRequiredMark={true}/>
+                <InputAuthentification label="IBAN" name="iban" type="text" required showRequiredMark={true}/>
                 <div class="flex flex-col gap-1">
-                  <AuthentificationInput label="Email" name="email" type="email" required showRequiredMark={true}/>
+                  <InputAuthentification label="Email" name="email" type="email" required showRequiredMark={true}/>
                   <Show when={last()?.result?.error==="EMAIL_EXISTS"}>
                     <span class="text-red-500 text-sm">Mail déjà existant</span>
                   </Show>
                 </div>
-                <AuthentificationInput label="Mot de passe" name="password" type="password" required showRequiredMark={true}/>
+                <InputAuthentification label="Mot de passe" name="password" type="password" required showRequiredMark={true}/>
 
                 <button
                   type="submit"

@@ -1,11 +1,17 @@
 import type {APIEvent} from "@solidjs/start/server";
-import {getUserFromSession, LoginAction} from "~/lib/user";
+import {Login} from "~/lib/user";
 
 
 export async function POST(event: APIEvent){
-  return await LoginAction(await event.request.formData())
+  const formData= await event.request.formData();
+  const result= await Login(formData);
+
+  return new Response(JSON.stringify(result),{
+    status: 200,
+    headers: {"Content-Type": "application/json"},
+  });
 }
 
-export async function GET(event: APIEvent){
-    return await getUserFromSession();
-}
+
+
+

@@ -3,7 +3,7 @@ import {createSignal, Show} from "solid-js";
 
 
 //COMPOSANT INPUT
-export default function AuthentificationInput(props:{
+export default function InputAuthentification(props:{
   label?: string;
   name: string;
   type: string;
