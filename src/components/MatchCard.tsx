@@ -14,7 +14,6 @@ type Match = {
   id_creator: number;
 };
 
-
 function getSportIcon(sport: string) {
   const name = sport.toLowerCase();
   const known = ["football", "volleyball", "basketball", "badminton"];
@@ -38,42 +37,43 @@ function formatHour(date: Date) {
   });
 }
 
-
-
-export default function MatchCard(props: { match: Match, user?: any }) {
+export default function MatchCard(props: { match: Match; user?: any }) {
   const { match, user } = props;
   const isCreator = user?.id === match.id_creator;
 
   return (
-    <A href={`/match/${match.id}`}>
-      <div class="relative bg-[#c5ff36] text-black p-3 pb-1 rounded-xl max-w-3xl mx-auto shadow-lg mb-4">
-        {/* Icône creator */}
+    <A href={`/match/${match.id}`} class="block w-full max-w-4xl px-2">
+      <div class="relative bg-[#c5ff36] text-black px-4 py-3 rounded-2xl shadow-lg w-full space-y-3">
+
+        {/* Icône créateur */}
         <Show when={isCreator}>
           <img
             src="/images/creator_icon.png"
             alt="Créateur"
-            class="absolute top-3 right-3 w-10 h-10"
+            class="absolute top-2 right-2 w-8 h-8"
           />
         </Show>
 
-        {/* Icône + sport */}
-        <div class="flex items-center gap-4 mb-2">
+        {/* SPORT */}
+        <div class="flex items-center gap-4">
           <img src={getSportIcon(match.sport)} alt="" class="w-10 h-10" />
-          <h2 class="text-3xl font-bold uppercase">{match.sport}</h2>
+          <h2 class="text-2xl sm:text-3xl font-bold uppercase">{match.sport}</h2>
         </div>
 
-        {/* Date + Lieu */}
-        <div class="flex justify-between items-center text-2xl font-semibold mt-6 mb-2 mr-6 flex-wrap gap-y-2">
-          <span>🗓️ {formatDate(match.date)}</span>
-          <span>📍 {match.place}</span>
+        {/* DATE + LIEU */}
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center font-semibold w-full text-base sm:text-2xl gap-y-1">
+          <span class="sm:truncate">📅 {formatDate(match.date)}</span>
+          <span class="sm:truncate sm:text-right">📍 {match.place}</span>
         </div>
 
-        {/* Heure + Terrain */}
-        <div class="flex justify-between items-center text-2xl font-semibold mb-2 mr-6 flex-wrap gap-y-2">
-          <span>🕒 {formatHour(match.start_time)} → {formatHour(match.end_time)}</span>
-          <span>🏟️ {match.field}</span>
+        {/* HEURE + TERRAIN */}
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center font-semibold w-full text-base sm:text-2xl gap-y-1">
+          <span class="sm:truncate">⏰ {formatHour(match.start_time)} → {formatHour(match.end_time)}</span>
+          <span class="sm:truncate sm:text-right">🏟️ {match.field}</span>
         </div>
+
       </div>
     </A>
+    
   );
 }

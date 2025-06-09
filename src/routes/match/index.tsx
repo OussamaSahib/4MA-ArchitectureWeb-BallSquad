@@ -90,11 +90,12 @@ export default function MatchListPage() {
               when={filtered().length > 0}
               fallback={<p class="text-gray-400 text-center text-xl">Aucun match</p>}
             >
-              <div class="grid gap-6 grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-2">
+              <div class="flex flex-col gap-6 items-center w-full">
                 <For each={filtered()}>
                   {(match) => <MatchCard match={match} user={user()} />}
                 </For>
               </div>
+
             </Show>
           </Show>
         </main>
