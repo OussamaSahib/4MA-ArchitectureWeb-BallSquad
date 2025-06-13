@@ -203,56 +203,64 @@ export const UpdateUserSchema= z.object({
   email: z.string().email(),
   phone: z.string(),
   iban: z.string(),
-  password: z.string(),
+  password: z.string().optional(),
 });
 
-export const UpdateUserAction= action(async(form: FormData)=>{
+
+
+export const UpdateUser = async (form: FormData) => {
   "use server";
 
-  const user= await getUserFromSession();
-  if (!user) throw new Error("Utilisateur non connecté");
+  // Tentative session (web)
+  let user = await getUser();
 
-  const data= UpdateUserSchema.parse({
+  // Fallback mobile : récupérer par email
+  if (!user) {
+    const email = form.get("email")?.toString();
+    if (!email) throw new Error("Email requis");
+    user = await db.user.findUnique({where: { email } });
+    if (!user) throw new Error("Utilisateur introuvable");
+  }
+
+  const rawPassword = form.get("password");
+  const data = UpdateUserSchema.parse({
     firstname: form.get("firstname"),
     lastname: form.get("lastname"),
     email: form.get("email"),
     phone: form.get("phone"),
     iban: form.get("iban"),
-    password: form.get("password"),
+    password: rawPassword ? String(rawPassword) : undefined,
   });
 
-  const file= form.get("photo") as File;
-  const removePhoto= form.get("removePhoto")==="true";
+  const file = form.get("photo") as File;
+  const removePhoto = form.get("removePhoto") === "true";
 
-  let photoPath= user.photo;
+  let photoPath = user.photo;
+  const uploadDir = path.resolve("public/images/profile_photos");
 
-  const uploadDir= path.resolve("public/images/profile_photos");
-
-  // Supprimer ancienne photo si demande ou nouvelle image
-  if ((removePhoto || (file && file.size >0)) && user.photo && user.photo!=="/images/profile_photos/icone_profile.png"){
-    const oldPhotoPath= path.resolve("public" + user.photo);
-    if (fs.existsSync(oldPhotoPath)){
+  if ((removePhoto || (file && file.size > 0)) && user.photo && user.photo !== "/images/profile_photos/profile_icon.png") {
+    const oldPhotoPath = path.resolve("public" + user.photo);
+    if (fs.existsSync(oldPhotoPath)) {
       fs.unlinkSync(oldPhotoPath);
     }
-    photoPath= null; // Réinitialise vers défaut si suppression
+    photoPath = null;
   }
 
-  // Gérer nouvelle image si fournie
-  if (file && file.size >0) {
-    const buffer= Buffer.from(await file.arrayBuffer());
-    const ext= path.extname(file.name);
-    const filename= `${data.firstname}_${data.lastname}_${Date.now()}${ext}`;
-    const filepath= path.join(uploadDir, filename);
+  if (file && file.size > 0) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const ext = path.extname(file.name);
+    const filename = `${data.firstname}_${data.lastname}_${Date.now()}${ext}`;
+    const filepath = path.join(uploadDir, filename);
 
-    if (!fs.existsSync(uploadDir)){
+    if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
     fs.writeFileSync(filepath, buffer);
-    photoPath= `/images/profile_photos/${filename}`;
+    photoPath = `/images/profile_photos/${filename}`;
   }
 
-  const updateData: any= {
+  const updateData: any = {
     firstname: data.firstname,
     lastname: data.lastname,
     email: data.email,
@@ -261,20 +269,22 @@ export const UpdateUserAction= action(async(form: FormData)=>{
     photo: photoPath,
   };
 
-  // Si un nouveau mot de passe a été fourni
-  if (data.password && data.password.trim() !=="") {
+  if (data.password && data.password.trim() !== "") {
     updateData.password = await bcrypt.hash(data.password, 10);
   }
 
   await db.user.update({
-    where: {id: user.id},
+    where: { id: user.id },
     data: updateData,
   });
 
-  if (data.email!==user.email) {
-    const session= await getSession();
-    await session.update({email: data.email});
+  // Maj session uniquement si getUser() initial était valide
+  if (user && data.email !== user.email) {
+    const session = await getSession();
+    await session.update({ email: data.email });
   }
 
-  return redirect("/profile");
-});
+  return { success: true };
+};
+
+export const UpdateUserAction= action(UpdateUser)

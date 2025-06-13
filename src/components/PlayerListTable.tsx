@@ -53,7 +53,7 @@ export default function PlayerListTable(props: { match: any }) {
                   {joueur ? (
                     <div class="flex items-center gap-2">
                       <img
-                        src={joueur.photo || "/images/profile_photos/icone_profile.png"}
+                        src={joueur.photo || "/images/profile_photos/profile_icon.png"}
                         alt={`${joueur.firstname} ${joueur.lastname}`}
                         class="w-8 h-8 rounded-full object-cover"
                       />
@@ -62,7 +62,7 @@ export default function PlayerListTable(props: { match: any }) {
                   ) : invite ? (
                     <div class="flex items-center gap-2">
                       <img
-                        src="/images/profile_photos/icone_profile.png"
+                        src="/images/profile_photos/profile_icon.png"
                         alt={`${invite.firstname} ${invite.lastname}`}
                         class="w-8 h-8 rounded-full object-cover"
                       />

@@ -82,7 +82,7 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                       {(f) => (
                         <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md">
                           <img
-                            src={f.friend.photo || "/images/profile_photos/icone_profile.png"}
+                            src={f.friend.photo || "/images/profile_photos/profile_icon.png"}
                             alt="Photo de profil"
                             class="w-20 h-20 sm:w-22 sm:h-22 rounded-full mx-auto mb-2 object-cover opacity-80"
                           />
@@ -127,7 +127,7 @@ export default function AddPlayersPage(props: { params: { id: string } }) {
                       {(g) => (
                         <div class="bg-[#2e2e2e] p-4 rounded-lg text-center shadow-md">
                           <img
-                            src="/images/profile_photos/icone_profile.png"
+                            src="/images/profile_photos/profile_icon.png"
                             alt="Photo invité"
                             class="w-20 h-20 sm:w-22 sm:h-22 rounded-full mx-auto mb-2 object-cover opacity-80"
                           />

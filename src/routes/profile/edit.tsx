@@ -1,7 +1,7 @@
 import {createAsyncStore, useNavigate, useSubmissions, type RouteDefinition} from "@solidjs/router";
 import {ErrorBoundary, Show, Suspense, createEffect, createSignal} from "solid-js";
 import {getUser, UpdateUserAction} from "~/lib/user";
-import ProfileInput from "~/components/EditProfileInput";
+import InputEditProfile from "~/components/InputEditProfile";
 
 
 
@@ -66,8 +66,8 @@ export default function EditProfilePage(){
                     <img
                       src={
                         removePhoto()
-                          ? "/images/profile_photos/icone_profile.png"
-                          : previewUrl() || u().photo || "/images/profile_photos/icone_profile.png"
+                          ? "/images/profile_photos/profile_icon.png"
+                          : previewUrl() || u().photo || "/images/profile_photos/profile_icon.png"
                       }
                       alt="Aperçu photo"
                       class="w-32 h-32 rounded-full object-cover shadow"
@@ -115,12 +115,12 @@ export default function EditProfilePage(){
 
 
                   {/*FORMULAIRE*/}
-                  <ProfileInput label="Prénom" name="firstname" value={u().firstname} />
-                  <ProfileInput label="Nom" name="lastname" value={u().lastname} />
-                  <ProfileInput label="Email" name="email" type="email" value={u().email} />
-                  <ProfileInput label="Téléphone" name="phone" value={u().phone ?? ""} />
-                  <ProfileInput label="IBAN" name="iban" value={u().iban ?? ""} />
-                  <ProfileInput
+                  <InputEditProfile label="Prénom" name="firstname" value={u().firstname} />
+                  <InputEditProfile label="Nom" name="lastname" value={u().lastname} />
+                  <InputEditProfile label="Email" name="email" type="email" value={u().email} />
+                  <InputEditProfile label="Téléphone" name="phone" value={u().phone ?? ""} />
+                  <InputEditProfile label="IBAN" name="iban" value={u().iban ?? ""} />
+                  <InputEditProfile
                     label="Nouveau mot de passe"
                     name="password"
                     type="password"

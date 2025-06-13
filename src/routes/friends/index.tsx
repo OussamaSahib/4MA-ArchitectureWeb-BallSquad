@@ -183,7 +183,7 @@ export default function FriendsPage(){
                           <li class="bg-gray-700 p-2 rounded flex justify-between items-center">
                             <div class="flex items-center gap-3">
                               <img
-                                src={user.photo || "/images/profile_photos/icone_profile.png"}
+                                src={user.photo || "/images/profile_photos/profile_icon.png"}
                                 class="w-15 h-15 rounded-full"
                               />
                               <span class="text-xl">{user.firstname} {user.lastname}</span>

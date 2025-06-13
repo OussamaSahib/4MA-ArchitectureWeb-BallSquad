@@ -12,7 +12,7 @@ export default function ProfileCard(props: {user: any; children?: any;}){
         {/*PHOTO USER*/}
         <div class="flex justify-center mb-0">
           <img
-            src={props.user.photo || "/images/profile_photos/icone_profile.png"}
+            src={props.user.photo || "/images/profile_photos/profile_icon.png"}
             alt="Avatar"
             class="rounded-full w-45 h-45 object-cover cursor-pointer"
             onClick={() => setShowImage(true)}
@@ -60,7 +60,7 @@ export default function ProfileCard(props: {user: any; children?: any;}){
           {/*Photo +grand centrée*/}
           <div class="flex flex-1 items-start justify-center">
             <img
-              src={props.user.photo || "/images/profile_photos/icone_profile.png"}
+              src={props.user.photo || "/images/profile_photos/profile_icon.png"}
               alt="Avatar Zoom"
               class="max-w-md rounded-xl shadow-lg cursor-pointer"
             />

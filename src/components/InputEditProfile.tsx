@@ -1,4 +1,4 @@
-export default function ProfileInput(props:{label: string; name: string; type?: string; value?: string; placeholder?: string;}){
+export default function InputEditProfile(props:{label: string; name: string; type?: string; value?: string; placeholder?: string;}){
   return (
     <div>
       <label class="text-white block mb-1">{props.label}</label>
