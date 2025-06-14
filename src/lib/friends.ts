@@ -88,7 +88,7 @@ const guestSchema= z.object({
 });
 
 //AJOUTER UN INVITÉ (POST)
-export const AddGuestAction= action(async(form: FormData)=>{
+export const AddGuest= async(form: FormData)=>{
   "use server";
   const user= await getUserFromSession();
   if (!user) throw new Error("Non connecté");
@@ -106,7 +106,9 @@ export const AddGuestAction= action(async(form: FormData)=>{
       userId: user.id,
     },
   });
-})
+}
+export const AddGuestAction= action(AddGuest)
+
 
 
 //RÉCUPERER LISTE INVITÉS (GET)
@@ -195,6 +197,52 @@ export async function addFriendMobile(friendId: number, email: string){
     data:{
       userId: user.id,
       friendId,
+    },
+  });
+}
+
+
+
+
+//INVITÉS
+//RÉCUPERER LISTE INVITÉS (GET)
+export async function getGuestsMobile(userId: number){
+  return await db.guest.findMany({
+    where: {userId},
+  });
+}
+
+
+//RÉCUPÉRER DONNÉES D'1 INVITÉ (GET)
+export async function getGuestByIdMobile(guestId: number, email: string){
+  const user= await db.user.findUnique({ where: {email}});
+  if (!user) return null;
+
+  return await db.guest.findFirst({
+    where: {
+      id: guestId,
+      userId: user.id,
+    },
+  });
+}
+
+//AJOUTER UN INVITÉ (POST)
+export async function addGuestMobile(formData: FormData, email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  const data= guestSchema.parse({
+    firstname: formData.get("firstname"),
+    lastname: formData.get("lastname"),
+    phone: formData.get("phone")?.toString(),
+  });
+
+  return await db.guest.create({
+    data:{
+      firstname: data.firstname,
+      lastname: data.lastname,
+      phone: data.phone,
+      userId: user.id,
     },
   });
 }
