@@ -8,6 +8,6 @@ export async function POST(event: APIEvent){
 
   return new Response(JSON.stringify(result), {
     status: 200,
-    headers: { "Content-Type": "application/json" },
+    headers: {"Content-Type": "application/json"},
   });
 }

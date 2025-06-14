@@ -4,28 +4,8 @@ import {z} from "zod";
 import {action, query} from "@solidjs/router";
 
 
-
+//WEB
 //AMIS
-const friendSchema= z.object({
-  friendId: z.string().transform(Number),
-});
-
-//AJOUTER UN AMI (POST)
-export const AddFriendAction= action(async(form: FormData)=>{
-  "use server";
-  const user= await getUserFromSession();
-  if (!user) throw new Error("Non connecté");
-  const data= friendSchema.parse({friendId: form.get("friendId")});
-
-  await db.friend.create({
-    data:{
-      userId: user.id,
-      friendId: data.friendId,
-    },
-  });
-})
-
-
 //RÉCUPERER LISTE AMIS (GET)
 export const getFriends= query(async()=>{
   "use server";
@@ -37,8 +17,6 @@ export const getFriends= query(async()=>{
     include: {friend: true},
   });
 }, "getFriends");
-
-
 
 
 //RÉCUPÉRER DONNÉES D'1 AMI (GET)
@@ -79,6 +57,25 @@ export const getAllUsers= query(async ()=>{
 
 
 
+//AJOUTER UN AMI (POST)
+const friendSchema= z.object({
+  friendId: z.string().transform(Number),
+});
+
+export const AddFriend= async(form: FormData)=>{
+  "use server";
+  const user= await getUserFromSession();
+  if (!user) throw new Error("Non connecté");
+  const data= friendSchema.parse({friendId: form.get("friendId")});
+
+  await db.friend.create({
+    data:{
+      userId: user.id,
+      friendId: data.friendId,
+    },
+  });
+}
+export const AddFriendAction= action(AddFriend)
 
 
 
@@ -142,3 +139,62 @@ export const getGuestById= query(async(id: string)=>{
 }, "getGuestById");
 
 
+
+
+
+
+
+//MOBILE
+//AMIS
+//RÉCUPERER LISTE AMIS (GET)
+export async function getFriendsMobile(userId: number) {
+  return await db.friend.findMany({
+    where: { userId },
+    include: { friend: true },
+  });
+}
+
+
+//RÉCUPÉRER DONNÉES D'1 AMI (GET)
+export async function getFriendByIdMobile(friendId: number, email: string){
+  const user= await db.user.findUnique({ where: { email } });
+  if (!user) return null;
+
+  const relation= await db.friend.findFirst({
+    where:{
+      userId: user.id,
+      friendId,
+    },
+    include: {friend: true},
+  });
+
+  return relation?.friend ?? null;
+}
+
+
+//LISTE DE TT LES USERS TOTAL (GET)
+export async function getAllUsersMobile(email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) return [];
+
+  return await db.user.findMany({
+    where:{
+      id: {not: user.id},
+    },
+    take: 100,
+  });
+}
+
+
+//AJOUTER UN AMI (POST)
+export async function addFriendMobile(friendId: number, email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  await db.friend.create({
+    data:{
+      userId: user.id,
+      friendId,
+    },
+  });
+}
