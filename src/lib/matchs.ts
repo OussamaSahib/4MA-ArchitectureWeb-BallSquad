@@ -5,7 +5,7 @@ import {redirect} from "@solidjs/router"
 import {getUserFromSession} from "./user";
 
 
-
+//WEB
 //NEW MATCH (POST)
 const matchSchema= z.object({
   sport: z.string(),
@@ -19,7 +19,7 @@ const matchSchema= z.object({
   quantity_players: z.string(),
 });
 
-export const AddMatchAction= action(async(form: FormData)=>{
+export const AddMatch= async(form: FormData)=>{
   "use server";
 
   const user= await getUserFromSession();
@@ -59,8 +59,8 @@ export const AddMatchAction= action(async(form: FormData)=>{
       },
     });
   return redirect("/match");
-})
-
+}
+export const AddMatchAction= action(AddMatch)
 
 
 
@@ -88,7 +88,7 @@ export const getMatchs= query(async ()=>{
 
 
 //RÉCUPÈRE DETAILS MATCH (GET)
-export const getMatchById= query(async (id: string)=>{
+export const getMatchById= query(async(id: string)=>{
   "use server";
   const matchId= parseInt(id, 10);
   return await db.match.findUnique({
@@ -105,7 +105,7 @@ export const getMatchById= query(async (id: string)=>{
 
 
 //UPDATE EDIT MATCH (-->POST)
-export const EditMatchAction= action(async (form: FormData)=>{
+export const EditMatch= async (form: FormData)=>{
   "use server";
   const id= parseInt(form.get("id") as string, 10);
 
@@ -126,8 +126,8 @@ export const EditMatchAction= action(async (form: FormData)=>{
   });
 
   return redirect(`/match/${id}`);
-})
-
+}
+export const EditMatchAction= action(EditMatch)
 
 
 
@@ -138,7 +138,7 @@ const addPlayerSchema= z.object({
   userId: z.string().transform(Number),
 });
 
-export const AddPlayerToMatchACtion= action(async(form: FormData)=>{
+export const AddPlayerToMatch= async(form: FormData)=>{
   "use server";
   const user= await getUserFromSession();
   if (!user) throw new Error("Non connecté");
@@ -155,8 +155,8 @@ export const AddPlayerToMatchACtion= action(async(form: FormData)=>{
       status: "NOT_ASKED", 
     },
   });
-});
-
+}
+export const AddPlayerToMatchACtion= action(AddPlayerToMatch)
 
 
 //AJOUT INVITÉ AU MATCH (POST)
@@ -186,3 +186,112 @@ export const AddGuestToMatchAction= action(async(form: FormData)=>{
     )
   }
 )
+
+
+
+
+
+
+
+//MOBILE
+//RÉCUPÈRE MATCHS (créés ou rejoints par l'utilisateur connecté) (GET)
+export async function getMatchsMobile(email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) return [];
+
+  return await db.match.findMany({
+    where:{
+      OR:[
+        {id_creator: user.id},
+        {matchPlayers: {some: {userId: user.id}}},
+      ],
+    },
+    distinct: ["id"],
+    include:{
+      creator: true,
+      matchPlayers: true,
+    },
+  });
+}
+
+
+//NEW MATCH (POST)
+export async function AddMatchMobile(formData: FormData, email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) throw new Error("Utilisateur non trouvé");
+
+  const parsed= matchSchema.parse({
+    sport: formData.get("sport"),
+    date: formData.get("date"),
+    start_time: formData.get("start_time"),
+    end_time: formData.get("end_time"),
+    place: formData.get("place"),
+    field: formData.get("field"),
+    price_euros: formData.get("price_euros"),
+    price_cents: formData.get("price_cents"),
+    quantity_players: formData.get("quantity_players"),
+  });
+
+  const total_price= parseInt(parsed.price_euros, 10) + parseInt(parsed.price_cents, 10)/100;
+
+  return await db.match.create({
+    data:{
+      sport: parsed.sport,
+      date: new Date(parsed.date),
+      start_time: new Date(`${parsed.date}T${parsed.start_time}`),
+      end_time: new Date(`${parsed.date}T${parsed.end_time}`),
+      place: parsed.place,
+      field: parsed.field,
+      total_price,
+      quantity_players: parseInt(parsed.quantity_players, 10),
+      id_creator: user.id,
+      matchPlayers:{
+        create:{
+          userId: user.id,
+          status: "CONFIRMED",
+        },
+      },
+    },
+  });
+}
+
+
+
+//AJOUT JOUEUR AU MATCH (POST)
+export async function AddPlayerToMatchMobile(form: FormData, email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) throw new Error("Utilisateur non connecté");
+
+  const data= addPlayerSchema.parse({
+    matchId: form.get("matchId"),
+    userId: form.get("userId"),
+  });
+
+  return await db.matchPlayer.create({
+    data:{
+      matchId: data.matchId,
+      userId: data.userId,
+      status: "NOT_ASKED",
+    },
+  });
+}
+
+
+//AJOUT INVITÉ AU MATCH (POST)
+export async function AddGuestToMatchMobile(form: FormData, email: string){
+  const user= await db.user.findUnique({where: {email}});
+  if (!user) throw new Error("Utilisateur non connecté");
+
+  const data= addGuestToMatchSchema.parse({
+    matchId: form.get("matchId"),
+    guestId: form.get("guestId"),
+  });
+
+  return await db.matchGuest.create({
+    data:{
+      matchId: data.matchId,
+      guestId: data.guestId,
+      status: "NOT_ASKED",
+    },
+  });
+}
